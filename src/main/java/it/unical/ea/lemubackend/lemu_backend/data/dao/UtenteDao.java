@@ -9,10 +9,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface UtenteDao extends JpaRepository<Utente, Long>, JpaSpecificationExecutor<Utente> {
-
-    List<Utente> getUtenteById(Long id);
-
-    List<Utente> getUtenteByBannato(Boolean bannato);
-
-    List<Utente> getUtenteByAdmin(Boolean admin);
+    
 }
