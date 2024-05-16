@@ -32,7 +32,7 @@ public class Utente {
     private String cognome;
 
     @Column(name = "admin")
-    private Boolean admin;
+    private Boolean isAdmin;
 
     @Column(name = "bannato")
     private Boolean bannato;
