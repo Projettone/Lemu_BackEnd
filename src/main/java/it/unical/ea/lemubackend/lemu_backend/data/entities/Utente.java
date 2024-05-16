@@ -1,5 +1,6 @@
 package it.unical.ea.lemubackend.lemu_backend.data.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -62,21 +63,25 @@ public class Utente {
     private Credenziali credenziali;
 
     //Mapping carrello
+    @JsonManagedReference
     @OneToOne(mappedBy = "utente", fetch = FetchType.LAZY)
     @JoinColumn(name="id_carrello")
     private Carrello carrello;
 
     //Mapping wishlist
+    @JsonManagedReference
     @OneToOne(mappedBy = "utente", fetch = FetchType.LAZY)
     @JoinColumn(name="id_wishlist")
     private Wishlist wishlist;
 
     //Mapping recensioni
-    @OneToMany(mappedBy = "utente", fetch = FetchType.LAZY)
+    @JsonManagedReference
+    @OneToMany(mappedBy = "autore", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
     @JoinColumn(name="id_recensione")
     private ArrayList<Recensione> recensione;
 
     //Mapping ordini
+    @JsonManagedReference
     @OneToMany(mappedBy = "utente", fetch = FetchType.LAZY)
     @JoinColumn(name="id_ordine")
     private ArrayList<Ordine> ordine;
