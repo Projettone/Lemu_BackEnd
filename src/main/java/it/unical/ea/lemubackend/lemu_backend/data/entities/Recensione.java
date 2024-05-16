@@ -23,7 +23,7 @@ public class Recensione {
     private String commento;
 
     @JsonBackReference
-    @OneToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "prodotto")
     private Prodotto prodotto;
 
