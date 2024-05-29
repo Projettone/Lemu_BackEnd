@@ -15,10 +15,10 @@ public class WishlistProdotti {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "wishlist_id", referencedColumnName = "id")
+    @JoinColumn(name = "wishlist_id")
     private Wishlist wishlist;
 
     @ManyToOne
-    @JoinColumn(name = "prodotto_id", referencedColumnName = "id")
+    @JoinColumn(name = "prodotto_id")
     private Prodotto prodotto;
 }

@@ -63,12 +63,12 @@ public class Utente {
 
     //Mapping carrello
     @JsonManagedReference
-    @OneToOne(mappedBy = "utente_carrello", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "utente", fetch = FetchType.LAZY)
     private Carrello carrello;
 
     //Mapping wishlist
     @JsonManagedReference
-    @OneToOne(mappedBy = "utente_wishlist", fetch = FetchType.LAZY)
+    @OneToOne(mappedBy = "utente", fetch = FetchType.LAZY)
     private Wishlist wishlist;
 
     //Mapping recensioni
@@ -78,7 +78,7 @@ public class Utente {
 
     //Mapping ordini
     @JsonManagedReference
-    @OneToMany(mappedBy = "ordini", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "utente", fetch = FetchType.LAZY)
     private List<Ordine> ordini;
 
 

@@ -22,7 +22,7 @@ public class Ordine {
     private Indirizzo indirizzo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ordini")
+    @JoinColumn(name = "acquirente")
     private Utente utente;
 
 

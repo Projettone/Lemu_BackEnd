@@ -15,11 +15,11 @@ public class CarrelloProdotti {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "carrello_id", referencedColumnName = "id")
+    @JoinColumn(name = "carrello_id")
     private Carrello carrello;
 
     @ManyToOne
-    @JoinColumn(name = "prodotto_id", referencedColumnName = "id")
+    @JoinColumn(name = "prodotto_id")
     private Prodotto prodotto;
 
     @Column(name = "quantita", nullable = false)

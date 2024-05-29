@@ -42,9 +42,7 @@ public class WishlistServiceImpl implements WishlistService{
     private Wishlist convertToEntity(WishlistDto wishlistDto) {
         Wishlist wishlist = new Wishlist();
         wishlist.setId(wishlistDto.getId());
-        // Qui puoi convertire un UtenteDto in un'istanza di Utente se necessario
-        // wishlist.setUtente(...);
-        wishlist.setProdotti(wishlistDto.getProdotti());
+        //wishlist.setProdotti(wishlistDto.getProdotti());
         return wishlist;
     }
 
@@ -53,7 +51,7 @@ public class WishlistServiceImpl implements WishlistService{
         WishlistDto wishlistDto = new WishlistDto();
         wishlistDto.setId(wishlist.getId());
         wishlistDto.setUtenteId(wishlist.getUtente().getId());
-        wishlistDto.setProdotti(wishlist.getProdotti());
+        //wishlistDto.setProdotti(wishlist.getProdotti());
         return wishlistDto;
     }
 }

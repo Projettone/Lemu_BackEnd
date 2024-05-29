@@ -36,7 +36,6 @@ public class Prodotto {
     private String immagineProdotto;
 
     @OneToMany(mappedBy = "prodotto", fetch = FetchType.LAZY)
-    @JoinColumn(name = "id_recensione")
     private List<Recensione> recensione;
 
     @ManyToOne(fetch = FetchType.LAZY)

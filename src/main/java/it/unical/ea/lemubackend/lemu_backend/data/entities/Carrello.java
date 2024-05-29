@@ -18,11 +18,10 @@ public class Carrello {
     private Long id;
 
     @OneToOne
-    //specifica la colonna che mappa l'id dell'utente collegato
-    @JoinColumn(name = "utente_carrello")
+    @JoinColumn(name = "utente_id")
     private Utente utente;
 
-    @OneToMany(mappedBy = "carrello", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "carrello", cascade = CascadeType.REMOVE)
     private List<CarrelloProdotti> carrelloProdotti;
 
 }
