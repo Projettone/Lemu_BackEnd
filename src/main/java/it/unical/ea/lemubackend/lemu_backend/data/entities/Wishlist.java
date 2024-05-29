@@ -17,7 +17,8 @@ public class Wishlist {
     private Long id;
 
     @OneToOne
-    @JoinColumn(name = "utente_id", referencedColumnName = "id")
+    //specifica la colonna che mappa l'id dell'utente collegato
+    @JoinColumn(name = "utente_wishlist")
     private Utente utente;
 
     @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true)

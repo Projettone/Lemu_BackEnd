@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.ArrayList;
+import java.util.List;
 
 // Entity perchè è un'entità del database e il database di SpringBoot crea/aggiorna in maniera dinamica le entities.
 @Entity
@@ -56,36 +56,37 @@ public class Utente {
 
     @Embedded
     @AttributeOverrides({
-            @AttributeOverride(name = "username", column = @Column(name = "username", unique = true)),
-            @AttributeOverride(name = "password", column = @Column(name = "password")),
-            @AttributeOverride(name = "email", column = @Column(name = "email"))
+            @AttributeOverride(name = "email", column = @Column(name = "email", unique = true)),
+            @AttributeOverride(name = "password", column = @Column(name = "password"))
     })
     private Credenziali credenziali;
 
     //Mapping carrello
     @JsonManagedReference
-    @OneToOne(mappedBy = "utente", fetch = FetchType.LAZY)
-    @JoinColumn(name="id_carrello")
+    @OneToOne(mappedBy = "utente_carrello", fetch = FetchType.LAZY)
     private Carrello carrello;
 
     //Mapping wishlist
     @JsonManagedReference
-    @OneToOne(mappedBy = "utente", fetch = FetchType.LAZY)
-    @JoinColumn(name="id_wishlist")
+    @OneToOne(mappedBy = "utente_wishlist", fetch = FetchType.LAZY)
     private Wishlist wishlist;
 
     //Mapping recensioni
     @JsonManagedReference
     @OneToMany(mappedBy = "autore", fetch = FetchType.LAZY, cascade = CascadeType.REMOVE)
-    @JoinColumn(name="id_recensione")
-    private ArrayList<Recensione> recensione;
+    private List<Recensione> recensione;
 
     //Mapping ordini
     @JsonManagedReference
-    @OneToMany(mappedBy = "utente", fetch = FetchType.LAZY)
-    @JoinColumn(name="id_ordine")
-    private ArrayList<Ordine> ordine;
+    @OneToMany(mappedBy = "ordini", fetch = FetchType.LAZY)
+    private List<Ordine> ordini;
 
+
+    public Utente(String email, String firstName, String lastName) {
+        this.credenziali.setEmail(email);
+        this.nome = firstName;
+        this.cognome = lastName;
+    }
 
     
 }

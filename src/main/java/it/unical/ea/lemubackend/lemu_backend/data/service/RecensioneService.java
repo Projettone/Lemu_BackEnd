@@ -9,7 +9,7 @@ import java.util.List;
 public interface RecensioneService {
 
     void save(Recensione recensione);
-    
+
     Collection<RecensioneDto> findAll();
 
     RecensioneDto getById(Long id);

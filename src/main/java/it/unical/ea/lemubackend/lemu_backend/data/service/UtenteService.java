@@ -8,4 +8,7 @@ public interface UtenteService {
 
     public void save(Utente utente);
     UtenteDto getById(Long id);
+
+    UtenteDto getByCEmail(String email);
+
 }

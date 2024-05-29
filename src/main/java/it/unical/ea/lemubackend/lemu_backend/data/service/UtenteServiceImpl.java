@@ -22,4 +22,11 @@ public class UtenteServiceImpl implements UtenteService{
         Utente utente = utenteDao.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Non esiste un utente con id: [%s]", id)));
         return modelMapper.map(utente, UtenteDto.class);
     }
+
+    @Override
+    public UtenteDto getByCEmail(String email) {
+        Utente utente = utenteDao.findByCredenzialiEmail(email).orElseThrow(() -> new EntityNotFoundException(
+                        String.format("La seguente email non è presente: [%s]", email)));
+        return modelMapper.map(utente, UtenteDto.class);
+    }
 }
