@@ -7,6 +7,6 @@ import java.util.Optional;
 public interface WishlistService {
     WishlistDto saveWishlist(WishlistDto wishlistDto);
     Optional<WishlistDto> getWishlistById(Long id);
-    WishlistDto getWishlistByUtenteId(Long utenteId);
+    WishlistDto getWishlistByUtenteId(Long utenteId); //eliminare
     void deleteWishlist(Long id);
 }
