@@ -33,6 +33,6 @@ public class Ordine {
     private double prezzoTotaleOrdine;
 
     @OneToMany(mappedBy = "ordine", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<OrdineProdotto> ordineProdotti;  // Assicurati che questo sia presente
+    private List<OrdineProdotto> ordineProdotti;
 
 }
