@@ -23,17 +23,16 @@ public class Ordine {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "acquirente")
-    private Utente acquirente;
+    private Utente utente;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "venditore")
-    private Utente venditore;
 
     @Column(name = "data_acquisto")
     private LocalDate dataAcquisto;
 
-    @OneToMany(fetch = FetchType.LAZY)
-    @JoinColumn(name = "prodotto")
-    private List<Prodotto> prodotti;
+    @Column(name = "prezzoTotaleOrdine")
+    private double prezzoTotaleOrdine;
+
+    @OneToMany(mappedBy = "ordine", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<OrdineProdotto> ordineProdotti;  // Assicurati che questo sia presente
 
 }
