@@ -83,6 +83,7 @@ public class Utente {
 
 
     public Utente(String email, String firstName, String lastName) {
+        this.credenziali = new Credenziali();
         this.credenziali.setEmail(email);
         this.nome = firstName;
         this.cognome = lastName;
