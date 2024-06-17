@@ -7,6 +7,7 @@ import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.data.service.UtenteService;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,9 +25,10 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 
 import java.util.Map;
 
-@RequestMapping(path="/api/v1", produces = "application/json")
+@RequiredArgsConstructor
+@RequestMapping(path="/api/v1")
 @RestController
-@CrossOrigin(origins = "http://localhost:8080")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UtenteController {
 
     private final UtenteDao utenteDao;
@@ -34,14 +36,6 @@ public class UtenteController {
     private final AuthenticationManager authenticationManager;
     private final PasswordEncoder passwordEncoder;
 
-
-
-    public UtenteController(UtenteDao utenteDao, UtenteService utenteService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder) {
-        this.utenteDao = utenteDao;
-        this.utenteService = utenteService;
-        this.authenticationManager = authenticationManager;
-        this.passwordEncoder = passwordEncoder;
-    }
 
     @GetMapping(path="/google_login")
     public ResponseEntity<UtenteRegistrazioneDto> googleAuthentication(Model model, @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
