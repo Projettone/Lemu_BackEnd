@@ -8,12 +8,18 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.User;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -47,6 +53,7 @@ public class UtenteServiceImpl implements UtenteService{
         model.addAttribute("userAttributes", oauth2User.getAttributes());
 
         String email = oauth2User.getAttributes().get("email").toString();
+        System.out.println("ATRTIBUTI:" + oauth2User.getAttributes());
 
         Optional<Utente> optionalUtente = utenteDao.findByCredenzialiEmail(email);
 
@@ -58,4 +65,15 @@ public class UtenteServiceImpl implements UtenteService{
         }
         return modelMapper.map(optionalUtente, UtenteRegistrazioneDto.class);
     }
+
+
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        if("admin".equals(email))
+            return new User(email, new BCryptPasswordEncoder(12).encode("strongPassword"), List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
+        Optional<Utente> utente = utenteDao.findByCredenzialiEmail(email);
+        if(utente.isPresent()) return new User(email, utente.get().getCredenziali().getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        throw new UsernameNotFoundException("User not found");
+    }
+
+
 }
