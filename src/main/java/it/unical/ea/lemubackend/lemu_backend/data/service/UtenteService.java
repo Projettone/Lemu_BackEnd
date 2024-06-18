@@ -17,9 +17,11 @@ public interface UtenteService {
 
     UtenteDto getByCEmail(String email);
 
-    UtenteRegistrazioneDto googleAuthentication(Model model,
+    /*UtenteRegistrazioneDto googleAuthentication(Model model,
                                                 @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
                                                 @AuthenticationPrincipal OAuth2User oauth2Use);
+
+     */
 
 
 

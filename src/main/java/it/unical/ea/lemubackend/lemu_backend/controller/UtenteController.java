@@ -1,6 +1,7 @@
 package it.unical.ea.lemubackend.lemu_backend.controller;
 
 import com.nimbusds.jose.JOSEException;
+import it.unical.ea.lemubackend.lemu_backend.config.ApiResponse;
 import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
@@ -37,11 +38,14 @@ public class UtenteController {
     private final PasswordEncoder passwordEncoder;
 
 
+    /*
     @GetMapping(path="/google_login")
     public ResponseEntity<UtenteRegistrazioneDto> googleAuthentication(Model model, @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
                                                                        @AuthenticationPrincipal OAuth2User oauth2User) {
         return ResponseEntity.ok(this.utenteService.googleAuthentication(model, authorizedClient, oauth2User));
     }
+
+     */
 
 
     @PostMapping(path = "/authenticate")
@@ -52,17 +56,23 @@ public class UtenteController {
         response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
     }
 
-    @PostMapping(path="/register")
-    public ResponseEntity<String> register(
-            @RequestParam("email") String email,
-            @RequestParam("password") String password) {
-        System.out.println("ciao");
-        if("admin".equals(email) || utenteDao.findByCredenzialiEmail(email).isPresent())
-            return new ResponseEntity<>("existing username", HttpStatus.CONFLICT);
-        Utente utente = new Utente(email, passwordEncoder.encode(password), "");
+    @PostMapping("/register")
+    public ResponseEntity<ApiResponse<Utente>> register(@RequestBody UtenteRegistrazioneDto utenteRegistrazioneDto) {
+        String credenzialiEmail = utenteRegistrazioneDto.getCredenzialiEmail();
+        String credenzialiPassword = utenteRegistrazioneDto.getCredenzialiPassword();
+        String nome = utenteRegistrazioneDto.getNome();
+        String cognome = utenteRegistrazioneDto.getCognome();
+
+        if (utenteDao.findByCredenzialiEmail(credenzialiEmail).isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(new ApiResponse<>(false, "Username già esistente", null));
+        }
+
+        Utente utente = new Utente(credenzialiEmail, passwordEncoder.encode(credenzialiPassword), nome, cognome);
         utenteDao.save(utente);
-        return new ResponseEntity<>("registered", HttpStatus.OK);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Registrazione avvenuta con successo", utente));
     }
+
 
 
 

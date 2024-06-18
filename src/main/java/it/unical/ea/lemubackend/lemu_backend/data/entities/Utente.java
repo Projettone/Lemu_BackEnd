@@ -82,9 +82,10 @@ public class Utente {
     private List<Ordine> ordini;
 
 
-    public Utente(String email, String firstName, String lastName) {
+    public Utente(String email, String password, String firstName, String lastName) {
         this.credenziali = new Credenziali();
         this.credenziali.setEmail(email);
+        this.credenziali.setPassword(password);
         this.nome = firstName;
         this.cognome = lastName;
     }

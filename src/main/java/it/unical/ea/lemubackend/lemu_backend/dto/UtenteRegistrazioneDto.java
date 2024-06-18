@@ -14,4 +14,5 @@ public class UtenteRegistrazioneDto {
     private String cognome;
     @Email
     private String credenzialiEmail;
+    private String credenzialiPassword;
 }

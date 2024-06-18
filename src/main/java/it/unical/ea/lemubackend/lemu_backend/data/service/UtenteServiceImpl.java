@@ -44,6 +44,8 @@ public class UtenteServiceImpl implements UtenteService{
         return modelMapper.map(utente, UtenteDto.class);
     }
 
+
+    /*
     @Override
     public UtenteRegistrazioneDto googleAuthentication(Model model,
                                                        @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
@@ -64,7 +66,10 @@ public class UtenteServiceImpl implements UtenteService{
             utenteDao.save(optionalUtente.get());
         }
         return modelMapper.map(optionalUtente, UtenteRegistrazioneDto.class);
+
     }
+
+     */
 
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
@@ -74,6 +79,8 @@ public class UtenteServiceImpl implements UtenteService{
         if(utente.isPresent()) return new User(email, utente.get().getCredenziali().getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
         throw new UsernameNotFoundException("User not found");
     }
+
+
 
 
 }
