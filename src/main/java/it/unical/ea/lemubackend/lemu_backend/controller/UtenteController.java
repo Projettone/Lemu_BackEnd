@@ -6,6 +6,7 @@ import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.data.service.UtenteService;
+import it.unical.ea.lemubackend.lemu_backend.dto.UtenteLoginDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -15,13 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
-import org.springframework.security.oauth2.core.user.OAuth2User;
-
 
 
 import java.util.Map;
@@ -74,7 +69,20 @@ public class UtenteController {
     }
 
 
+    @PostMapping("/login")
+    public ResponseEntity<ApiResponse<String>> login(@RequestBody UtenteLoginDto utenteLoginDto) throws JOSEException {
+        String credenzialiEmail = utenteLoginDto.getCredenzialiEmail();
+        String credenzialiPassword = utenteLoginDto.getCredenzialiPassword();
 
+        if (utenteDao.findByCredenzialiEmail(credenzialiEmail).isPresent()) {
+            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credenzialiEmail, credenzialiPassword));
+            String token = TokenStore.getInstance().createToken(Map.of("email",  credenzialiEmail));
+            return ResponseEntity.ok(new ApiResponse<>(true, "Login effettuato con successo", token));
+        }else{
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                    .body(new ApiResponse<>(false, "Errore, credenziali errate", null));
+        }
+    }
 
 
 

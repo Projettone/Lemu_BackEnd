@@ -34,9 +34,9 @@ public class SecurityConfiguration {
     @Order(1)
     public SecurityFilterChain filterChainJWT(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/api/v1/register","/api/v1/authenticate")
+                .securityMatcher("/api/v1/register", "/api/v1/login", "/api/v1/authenticate")
                 .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/v1/register", "/api/v1/authenticate").permitAll();
+                    auth.requestMatchers("/api/v1/register","/api/v1/login", "/api/v1/authenticate").permitAll();
                     auth.anyRequest().authenticated();
                 })
                 .csrf(csrf -> csrf.disable())
