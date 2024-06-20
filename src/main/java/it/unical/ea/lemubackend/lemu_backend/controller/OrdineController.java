@@ -29,7 +29,7 @@ public class OrdineController {
         return ResponseEntity.ok(ordineService.findOrderbyUser(jwt));
     }
 
-    @GetMapping("/ordine/{ordineId}")
+    @GetMapping("/ordine/{orderId}")
     public ResponseEntity<OrdineDto> getById(@PathVariable("orderId") Long id) {
         OrdineDto ordine = ordineService.getById(id);
         return (ordine != null) ? ResponseEntity.ok(ordine) : ResponseEntity.notFound().build();
