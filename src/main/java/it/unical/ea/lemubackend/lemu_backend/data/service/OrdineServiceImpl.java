@@ -4,10 +4,8 @@ import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.OrdineDao;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Ordine;
-import it.unical.ea.lemubackend.lemu_backend.data.entities.Prodotto;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.OrdineDto;
-import it.unical.ea.lemubackend.lemu_backend.dto.ProdottoDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -29,11 +27,11 @@ public class OrdineServiceImpl implements OrdineService {
     private final UtenteDao utenteDao;
 
     @Override
-    public HttpStatus save(OrdineDto ordineDto, String encodedJwt) {
-        // Decodifica del JWT base64 per ottenere il token JWT effettivo
-        String jwt = new String(Base64.getDecoder().decode(encodedJwt));
-
+    public boolean save(OrdineDto ordineDto, String encodedJwt) {
         try {
+            // Decodifica del JWT base64 per ottenere il token JWT effettivo
+            String jwt = new String(Base64.getDecoder().decode(encodedJwt));
+
             // Ottiene l'username (o email) dall'oggetto JWT usando il metodo TokenStore.getUser
             String username = TokenStore.getInstance().getUser(jwt);
 
@@ -49,17 +47,19 @@ public class OrdineServiceImpl implements OrdineService {
                 // Salva l'ordine nel database
                 ordineDao.save(ordine);
 
-                // Restituisce HttpStatus.OK se l'operazione ha avuto successo
-                return HttpStatus.OK;
+                // Restituisce true se l'operazione ha avuto successo
+                return true;
             } else {
-                // Se l'utente non esiste, restituisce HttpStatus.UNAUTHORIZED
-                return HttpStatus.UNAUTHORIZED;
+                // Se l'utente non esiste, restituisce false
+                return false;
             }
         } catch (Exception e) {
-            // Se si verifica un'eccezione, restituisce HttpStatus.INTERNAL_SERVER_ERROR
-            return HttpStatus.INTERNAL_SERVER_ERROR;
+            // Se si verifica un'eccezione, gestiscila o registrala se necessario
+            e.printStackTrace(); // Puoi gestire le eccezioni in modo più appropriato a seconda del tuo caso d'uso
+            return false;
         }
     }
+
 
     @Override
     public OrdineDto getById(Long id) {
