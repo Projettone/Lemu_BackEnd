@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface ProdottoService {
 
-    ProdottoDto save(ProdottoDto prodottoDto, String jwt);
+    boolean save(ProdottoDto prodottoDto, String jwt);
     Collection<ProdottoDto> findAll();
     ProdottoDto getById(Long id);
 }
