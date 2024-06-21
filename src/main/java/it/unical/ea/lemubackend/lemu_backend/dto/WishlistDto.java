@@ -11,4 +11,7 @@ public class WishlistDto {
     private Long id;
     private Long utenteId;
     private List<Long> prodotti;
+    private String nome;
+    private String tipo;
+    private List<String> condivisiCon;
 }

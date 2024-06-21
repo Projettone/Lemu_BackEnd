@@ -23,5 +23,14 @@ public class Wishlist {
     @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishlistProdotti> wishlistProdotti;
 
+    @Column(name = "nome")
+    private String nome;
+
+    @Column(name = "tipo")
+    private String tipo;
+
+    @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<WishlistCondivisione> wishlistCondivisione;
+
 }
 

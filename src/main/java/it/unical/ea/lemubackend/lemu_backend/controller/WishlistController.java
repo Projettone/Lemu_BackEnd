@@ -6,31 +6,23 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Optional;
+import java.util.List;
 
 @RestController
-@RequestMapping("/wishlist")
+@RequestMapping("/api/wishlists")
 public class WishlistController {
+
     @Autowired
     private WishlistService wishlistService;
 
     @PostMapping
     public ResponseEntity<WishlistDto> createWishlist(@RequestBody WishlistDto wishlistDto) {
-        WishlistDto createdWishlist = wishlistService.saveWishlist(wishlistDto);
-        return ResponseEntity.ok(createdWishlist);
+        return ResponseEntity.ok(wishlistService.createWishlist(wishlistDto));
     }
 
-    @GetMapping("/{id}")
-    public ResponseEntity<WishlistDto> getWishlistById(@PathVariable Long id) {
-        Optional<WishlistDto> wishlistDto = wishlistService.getWishlistById(id);
-        return wishlistDto.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/utente/{utenteId}")
-    public ResponseEntity<WishlistDto> getWishlistByUtenteId(@PathVariable Long utenteId) {
-        WishlistDto wishlistDto = wishlistService.getWishlistByUtenteId(utenteId);
-        return ResponseEntity.ok(wishlistDto);
+    @PutMapping("/{id}")
+    public ResponseEntity<WishlistDto> updateWishlist(@PathVariable Long id, @RequestBody WishlistDto wishlistDto) {
+        return ResponseEntity.ok(wishlistService.updateWishlist(id, wishlistDto));
     }
 
     @DeleteMapping("/{id}")
@@ -38,4 +30,15 @@ public class WishlistController {
         wishlistService.deleteWishlist(id);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<WishlistDto> getWishlistById(@PathVariable Long id) {
+        return ResponseEntity.ok(wishlistService.getWishlistById(id));
+    }
+
+    @GetMapping
+    public ResponseEntity<List<WishlistDto>> getAllWishlists() {
+        return ResponseEntity.ok(wishlistService.getAllWishlists());
+    }
 }
+

@@ -1,36 +1,41 @@
 package it.unical.ea.lemubackend.lemu_backend.data.service;
 
 import it.unical.ea.lemubackend.lemu_backend.data.dao.WishlistDao;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.WishlistDto;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Wishlist;
 import it.unical.ea.lemubackend.lemu_backend.data.service.WishlistService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.Optional;
-// mettere le eccezioni
+import java.util.List;
+import java.util.stream.Collectors;
+
 @Service
-public class WishlistServiceImpl implements WishlistService{
+public class WishlistServiceImpl implements WishlistService {
+
     @Autowired
     private WishlistDao wishlistDao;
 
     @Override
-    public WishlistDto saveWishlist(WishlistDto wishlistDto) {
-        Wishlist wishlist = convertToEntity(wishlistDto);
-        Wishlist savedWishlist = wishlistDao.save(wishlist);
-        return convertToDto(savedWishlist);
+    public WishlistDto createWishlist(WishlistDto wishlistDto) {
+        Wishlist wishlist = new Wishlist();
+        wishlist.setNome(wishlistDto.getNome());
+        wishlist.setTipo(wishlistDto.getTipo());
+        //wishlist.setUtente(new Utente(wishlistDto.getUtenteId()));
+        wishlistDao.save(wishlist);
+        wishlistDto.setId(wishlist.getId());
+        return wishlistDto;
     }
 
     @Override
-    public Optional<WishlistDto> getWishlistById(Long id) {
-        Optional<Wishlist> wishlist = wishlistDao.findById(id);
-        return wishlist.map(this::convertToDto);
-    }
-
-    @Override
-    public WishlistDto getWishlistByUtenteId(Long utenteId) {
-        Wishlist wishlist = wishlistDao.findByUtenteId(utenteId);
-        return convertToDto(wishlist);
+    public WishlistDto updateWishlist(Long id, WishlistDto wishlistDto) {
+        //Wishlist wishlist = wishlistDao.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wishlist not found"));
+        //wishlist.setNome(wishlistDto.getNome());
+        //wishlist.setTipo(wishlistDto.getTipo());
+        //wishlist.setUtente(new Utente(wishlistDto.getUtenteId()));
+        //wishlistDao.save(wishlist);
+        return wishlistDto;
     }
 
     @Override
@@ -38,20 +43,29 @@ public class WishlistServiceImpl implements WishlistService{
         wishlistDao.deleteById(id);
     }
 
-    // Metodo di conversione da DTO a Entità
-    private Wishlist convertToEntity(WishlistDto wishlistDto) {
-        Wishlist wishlist = new Wishlist();
-        wishlist.setId(wishlistDto.getId());
-        //wishlist.setProdotti(wishlistDto.getProdotti());
-        return wishlist;
-    }
-
-    // Metodo di conversione da Entità a DTO
-    private WishlistDto convertToDto(Wishlist wishlist) {
+    @Override
+    public WishlistDto getWishlistById(Long id) {
+        //Wishlist wishlist = wishlistDao.findById(id).orElseThrow(() -> new ResourceNotFoundException("Wishlist not found"));
         WishlistDto wishlistDto = new WishlistDto();
-        wishlistDto.setId(wishlist.getId());
-        wishlistDto.setUtenteId(wishlist.getUtente().getId());
-        //wishlistDto.setProdotti(wishlist.getProdotti());
+        //wishlistDto.setId(wishlist.getId());
+        //wishlistDto.setNome(wishlist.getNome());
+        //wishlistDto.setTipo(wishlist.getTipo());
+        //wishlistDto.setUtenteId(wishlist.getUtente().getId());
         return wishlistDto;
     }
+
+    @Override
+    public List<WishlistDto> getAllWishlists() {
+        return wishlistDao.findAll().stream()
+                .map(wishlist -> {
+                    WishlistDto wishlistDto = new WishlistDto();
+                    wishlistDto.setId(wishlist.getId());
+                    wishlistDto.setNome(wishlist.getNome());
+                    wishlistDto.setTipo(wishlist.getTipo());
+                    wishlistDto.setUtenteId(wishlist.getUtente().getId());
+                    return wishlistDto;
+                })
+                .collect(Collectors.toList());
+    }
 }
+
