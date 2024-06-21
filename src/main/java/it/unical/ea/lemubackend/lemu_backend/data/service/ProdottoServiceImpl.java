@@ -28,7 +28,7 @@ public class ProdottoServiceImpl implements  ProdottoService {
 
 
     @Override
-    public ProdottoDto save(ProdottoDto prodottoDto, String encodedJwt) {
+    public boolean save(ProdottoDto prodottoDto, String encodedJwt) {
         // Decodifica del JWT
         String jwt = new String(Base64.getDecoder().decode(encodedJwt));
 
@@ -53,7 +53,7 @@ public class ProdottoServiceImpl implements  ProdottoService {
             res.completeExceptionally(e);
         }
 
-        return res.join();
+        return true;
     }
 
     @Override
