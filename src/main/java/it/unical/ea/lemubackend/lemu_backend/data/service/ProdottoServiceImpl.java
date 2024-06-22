@@ -28,33 +28,37 @@ public class ProdottoServiceImpl implements  ProdottoService {
 
 
     @Override
-    public boolean save(ProdottoDto prodottoDto, String encodedJwt) {
-        // Decodifica del JWT
-        String jwt = new String(Base64.getDecoder().decode(encodedJwt));
-
-        CompletableFuture<ProdottoDto> res = new CompletableFuture<>();
-
-        // Mappa ArticoloDto a Articolo
-        Prodotto prodotto = modelMapper.map(prodottoDto, Prodotto.class);
-
-        // Trova l'utente venditore
-        Utente venditore = utenteDao.findById(prodottoDto.getUtente().getId()).orElse(null);
-
-        // Verifica il token e confronta l'email
+    public ProdottoDto save(ProdottoDto prodottoDto, String encodedJwt) {
         try {
+            // Decodifica del JWT
+            String jwt = new String(Base64.getDecoder().decode(encodedJwt));
+
+            // Trova l'utente venditore
+            Utente venditore = utenteDao.findById(prodottoDto.getUtente().getId()).orElse(null);
+
+            // Verifica il token e confronta l'email
             String username = TokenStore.getInstance().getUser(jwt);
             if (username != null && venditore != null && username.equals(venditore.getCredenziali().getEmail())) {
-                prodottoDao.save(prodotto);
-                res.complete(modelMapper.map(prodotto, ProdottoDto.class));
+                // Mappa ProdottoDto a Prodotto
+                Prodotto prodotto = modelMapper.map(prodottoDto, Prodotto.class);
+                prodotto.setUtente(venditore); // Associa l'utente al prodotto
+
+                // Salva il prodotto nel database
+                prodotto = prodottoDao.save(prodotto);
+
+                // Mappa il Prodotto salvato di nuovo a ProdottoDto e restituiscilo
+                return modelMapper.map(prodotto, ProdottoDto.class);
             } else {
-                res.complete(null);
+                // Se la verifica fallisce, restituisce null
+                return null;
             }
         } catch (Exception e) {
-            res.completeExceptionally(e);
+            // Gestione dell'eccezione
+            e.printStackTrace(); // Puoi gestire le eccezioni in modo più appropriato a seconda del tuo caso d'uso
+            return null;
         }
-
-        return true;
     }
+
 
     @Override
     public Collection<ProdottoDto> findAll() {
@@ -68,6 +72,11 @@ public class ProdottoServiceImpl implements  ProdottoService {
         Prodotto prodotto = prodottoDao.findById(id).orElseThrow(
                 () -> new EntityNotFoundException(String.format("Non esiste un prodotto con id: [%s]", id)));
         return modelMapper.map(prodotto, ProdottoDto.class);
+    }
+
+    @Override
+    public void save(Prodotto prodotto) {
+        prodottoDao.save(prodotto);
     }
 
 
