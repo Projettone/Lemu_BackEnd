@@ -10,6 +10,7 @@ import java.util.List;
 
 @Repository
 public interface OrdineDao extends JpaRepository<Ordine, Long> {
-    List<Ordine> findByUtente(Utente utente);
+
+    List<Ordine> findOrdineByUtente_Id(Long id);
 
 }

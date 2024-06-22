@@ -14,7 +14,7 @@ import java.util.Collection;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1")
+@RequestMapping("/prodottocontroller-api")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class ProdottoController {
 
@@ -22,21 +22,21 @@ public class ProdottoController {
 
 
 
-    @PostMapping("/prodotto")
+    @PostMapping("/add")
     public ResponseEntity<ProdottoDto> add(@RequestBody @Valid ProdottoDto prodotto, @RequestParam String jwt) {
         return ResponseEntity.ok(prodottoService.save(prodotto, jwt));
 
     }
 
 
-    @GetMapping("/prodotti")
+    @GetMapping("/all")
     public ResponseEntity<Collection<ProdottoDto>> findAll() {
         return ResponseEntity.ok(prodottoService.findAll());
     }
 
 
-    @GetMapping("/prodotto/{idItem}")
-    public ResponseEntity<ProdottoDto> getById(@PathVariable("idItem") Long id) {
+    @GetMapping("/get/{id}")
+    public ResponseEntity<ProdottoDto> getById(@PathVariable("id") Long id) {
         return ResponseEntity.ok(prodottoService.getById(id));
     }
 

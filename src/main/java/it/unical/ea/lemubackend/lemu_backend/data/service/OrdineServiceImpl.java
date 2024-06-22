@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
@@ -69,42 +70,13 @@ public class OrdineServiceImpl implements OrdineService {
     }
 
 
-    @Override
-    public Collection<OrdineDto> findOrderbyUser(String encodedJwt) {
-        // Decodifica del JWT base64 per ottenere il token JWT effettivo
-        String jwt = new String(Base64.getDecoder().decode(encodedJwt));
-
-        // Crea un CompletableFuture per gestire l'operazione asincrona
-        CompletableFuture<List<OrdineDto>> ordini = new CompletableFuture<>();
-
-        // Verifica il token e ottieni l'email dell'utente
-        try {
-            // Ottiene l'username (o email) dall'oggetto JWT usando il metodo TokenStore.getUser
-            String email = TokenStore.getInstance().getUser(jwt);
-
-            // Trova l'utente in base all'email
-            Utente utente = utenteDao.findByCredenzialiEmail(email).orElse(null);
-
-            // Se l'utente esiste, recupera i suoi ordini
-            if (utente != null) {
-                // Ottieni tutti gli ordini dell'utente e mappa ciascun ordine a OrdineDto
-                List<OrdineDto> ordineDtos = ordineDao.findByUtente(utente).stream()
-                        .map(ordine -> modelMapper.map(ordine, OrdineDto.class))
-                        .collect(Collectors.toList());
-
-                // Completa il CompletableFuture con la lista di OrdineDto
-                ordini.complete(ordineDtos);
-            } else {
-                // Se l'utente non esiste, completa con un'eccezione
-                ordini.completeExceptionally(new Exception("Utente non trovato"));
-            }
-        } catch (Exception e) {
-            // Se si verifica un'eccezione, completa il CompletableFuture con un'eccezione
-            ordini.completeExceptionally(e);
+    public Collection<OrdineDto> findOrderbyUser(Long id) {
+        List<Ordine> ordini = ordineDao.findOrdineByUtente_Id(id);
+        if (ordini.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Non ci sono ordini per l'utente con id: [%s]", id));
         }
-
-        // Attende il completamento del CompletableFuture e restituisce il risultato
-        return ordini.join();
+        return ordini.stream()
+                .map(ordine -> modelMapper.map(ordine, OrdineDto.class))
+                .collect(Collectors.toList());
     }
-
 }

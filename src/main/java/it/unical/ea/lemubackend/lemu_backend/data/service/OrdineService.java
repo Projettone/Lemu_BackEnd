@@ -8,7 +8,7 @@ public interface OrdineService {
 
     OrdineDto save(OrdineDto ordine, String jwt);
     OrdineDto getById(Long id);
-    Collection<OrdineDto> findOrderbyUser(String jwt);
+    Collection<OrdineDto> findOrderbyUser(Long jwt);
 
     
 }

@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Collection;
 
 @RestController
-@RequestMapping("/api/v1")
+@RequestMapping("/ordinecontroller-api")
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 @RequiredArgsConstructor
 public class OrdineController {
@@ -21,15 +21,15 @@ public class OrdineController {
     private final OrdineService ordineService;
 
 
-    @PostMapping("/ordine")
+    @PostMapping("/add")
     public ResponseEntity<OrdineDto> add(@RequestBody OrdineDto ordine, @RequestParam String jwt) {
      return ResponseEntity.ok(ordineService.save(ordine, jwt));
 
     }
 
-    @GetMapping("/ordini")
-    public ResponseEntity<Collection<OrdineDto>> findbyUser(String jwt) {
-        Collection<OrdineDto> ordineDtos = ordineService.findOrderbyUser(jwt);
+    @GetMapping("/all/{id}")
+    public ResponseEntity<Collection<OrdineDto>> findbyUser(@PathVariable("Id") Long id) {
+        Collection<OrdineDto> ordineDtos = ordineService.findOrderbyUser(id);
         return (ordineDtos != null) ? ResponseEntity.ok(ordineDtos) : ResponseEntity.notFound().build();
     }
 
