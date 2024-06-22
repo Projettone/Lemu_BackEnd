@@ -23,30 +23,15 @@ public class ProdottoController {
 
 
     @PostMapping("/prodotto")
-    public ResponseEntity<ApiResponse<ProdottoDto>> add(@RequestBody ProdottoDto prodotto, @RequestParam String jwt) {
-        if (prodottoService.save(prodotto, jwt)) {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Prodotto aggiunto con successo", prodotto));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>(false, "Prodotto non aggiunto", null));
-        }
+    public ResponseEntity<ProdottoDto> add(@RequestBody @Valid ProdottoDto prodotto, @RequestParam String jwt) {
+        return ResponseEntity.ok(prodottoService.save(prodotto, jwt));
+
     }
 
 
     @GetMapping("/prodotti")
-    public ResponseEntity<ApiResponse<Collection<ProdottoDto>>> findAll() {
-        try {
-            Collection<ProdottoDto> prodotti = prodottoService.findAll();
-            if (prodotti != null && !prodotti.isEmpty()) {
-                return ResponseEntity.ok(new ApiResponse<>(true, "Prodotti presi con successo", prodotti));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ApiResponse<>(false, "Nessun prodotto trovato", null));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(false, "Errore durante il recupero dei prodotti", null));
-        }
+    public ResponseEntity<Collection<ProdottoDto>> findAll() {
+        return ResponseEntity.ok(prodottoService.findAll());
     }
 
 
