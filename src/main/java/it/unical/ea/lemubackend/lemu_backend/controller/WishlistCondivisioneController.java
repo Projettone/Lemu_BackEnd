@@ -9,34 +9,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/emailCondivisioni")
+@RequestMapping("wishlistcondivisione-api")
 public class WishlistCondivisioneController {
 
     @Autowired
     private WishlistCondivisioneService wishlistCondivisioneService;
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<WishlistCondivisioneDto> createEmailCondivisione(@RequestBody WishlistCondivisioneDto wishlistCondivisioneDto) {
         return ResponseEntity.ok(wishlistCondivisioneService.createWishlistCondivisione(wishlistCondivisioneDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<WishlistCondivisioneDto> updateWishlistCondivisione(@PathVariable Long id, @RequestBody WishlistCondivisioneDto wishlistCondivisioneDto) {
         return ResponseEntity.ok(wishlistCondivisioneService.updateWishlistCondivisione(id, wishlistCondivisioneDto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteWishlistCondivisione(@PathVariable Long id) {
         wishlistCondivisioneService.deleteWishlistCondivisione(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<WishlistCondivisioneDto> getWishlistCondivisioneById(@PathVariable Long id) {
         return ResponseEntity.ok(wishlistCondivisioneService.getWishlistCondivisioneById(id));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<WishlistCondivisioneDto>> getAllWishlistCondivisioni() {
         return ResponseEntity.ok(wishlistCondivisioneService.getAllWishlistCondivisioni());
     }

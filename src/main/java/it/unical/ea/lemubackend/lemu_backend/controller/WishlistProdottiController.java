@@ -9,34 +9,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/wishlistProdotti")
+@RequestMapping("/wishlistprodotti-api")
 public class WishlistProdottiController {
 
     @Autowired
     private WishlistProdottiService wishlistProdottiService;
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<WishlistProdottiDto> createWishlistProdotti(@RequestBody WishlistProdottiDto wishlistProdottiDto) {
         return ResponseEntity.ok(wishlistProdottiService.createWishlistProdotti(wishlistProdottiDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<WishlistProdottiDto> updateWishlistProdotti(@PathVariable Long id, @RequestBody WishlistProdottiDto wishlistProdottiDto) {
         return ResponseEntity.ok(wishlistProdottiService.updateWishlistProdotti(id, wishlistProdottiDto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteWishlistProdotti(@PathVariable Long id) {
         wishlistProdottiService.deleteWishlistProdotti(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<WishlistProdottiDto> getWishlistProdottiById(@PathVariable Long id) {
         return ResponseEntity.ok(wishlistProdottiService.getWishlistProdottiById(id));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<WishlistProdottiDto>> getAllWishlistProdotti() {
         return ResponseEntity.ok(wishlistProdottiService.getAllWishlistProdotti());
     }

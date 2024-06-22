@@ -10,20 +10,20 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/categoria")
+@RequestMapping("/categoria-api")
 public class CategoriaController {
 
     @Autowired
     private CategoriaService categoriaService;
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<CategoriaDto> getCategoriaById(@PathVariable Long id) {
         Optional<CategoriaDto> categoriaDto = categoriaService.getCategoriaById(id);
         return categoriaDto.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<CategoriaDto>> getAllCategorie() {
         List<CategoriaDto> categorie = categoriaService.getAllCategorie();
         return ResponseEntity.ok(categorie);

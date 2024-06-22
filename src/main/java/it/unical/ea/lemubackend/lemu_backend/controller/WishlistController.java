@@ -9,34 +9,34 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/wishlists")
+@RequestMapping("/wishlists-api")
 public class WishlistController {
 
     @Autowired
     private WishlistService wishlistService;
 
-    @PostMapping
+    @PostMapping("/add")
     public ResponseEntity<WishlistDto> createWishlist(@RequestBody WishlistDto wishlistDto) {
         return ResponseEntity.ok(wishlistService.createWishlist(wishlistDto));
     }
 
-    @PutMapping("/{id}")
+    @PutMapping("/update/{id}")
     public ResponseEntity<WishlistDto> updateWishlist(@PathVariable Long id, @RequestBody WishlistDto wishlistDto) {
         return ResponseEntity.ok(wishlistService.updateWishlist(id, wishlistDto));
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteWishlist(@PathVariable Long id) {
         wishlistService.deleteWishlist(id);
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/get/{id}")
     public ResponseEntity<WishlistDto> getWishlistById(@PathVariable Long id) {
         return ResponseEntity.ok(wishlistService.getWishlistById(id));
     }
 
-    @GetMapping
+    @GetMapping("/all")
     public ResponseEntity<List<WishlistDto>> getAllWishlists() {
         return ResponseEntity.ok(wishlistService.getAllWishlists());
     }
