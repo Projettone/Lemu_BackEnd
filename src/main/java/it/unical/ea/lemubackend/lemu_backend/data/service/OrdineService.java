@@ -6,7 +6,7 @@ import java.util.Collection;
 
 public interface OrdineService {
 
-    boolean save(OrdineDto ordine, String jwt);
+    OrdineDto save(OrdineDto ordine, String jwt);
     OrdineDto getById(Long id);
     Collection<OrdineDto> findOrderbyUser(String jwt);
 
