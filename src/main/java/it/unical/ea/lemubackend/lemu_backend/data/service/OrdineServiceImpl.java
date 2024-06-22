@@ -27,7 +27,7 @@ public class OrdineServiceImpl implements OrdineService {
     private final UtenteDao utenteDao;
 
     @Override
-    public boolean save(OrdineDto ordineDto, String encodedJwt) {
+    public OrdineDto save(OrdineDto ordineDto, String encodedJwt) {
         try {
             // Decodifica del JWT base64 per ottenere il token JWT effettivo
             String jwt = new String(Base64.getDecoder().decode(encodedJwt));
@@ -45,28 +45,27 @@ public class OrdineServiceImpl implements OrdineService {
                 ordine.setUtente(utente); // Associa l'utente all'ordine
 
                 // Salva l'ordine nel database
-                ordineDao.save(ordine);
+                ordine = ordineDao.save(ordine);
 
-                // Restituisce true se l'operazione ha avuto successo
-                return true;
+                // Mappa l'Ordine salvato di nuovo a OrdineDto e restituiscilo
+                return modelMapper.map(ordine, OrdineDto.class);
             } else {
-                // Se l'utente non esiste, restituisce false
-                return false;
+                // Se l'utente non esiste, restituisce null
+                return null;
             }
         } catch (Exception e) {
             // Se si verifica un'eccezione, gestiscila o registrala se necessario
             e.printStackTrace(); // Puoi gestire le eccezioni in modo più appropriato a seconda del tuo caso d'uso
-            return false;
+            return null;
         }
     }
 
 
     @Override
     public OrdineDto getById(Long id) {
-        return modelMapper.map(
-                ordineDao.findById(id).orElseThrow(
-                        () -> new EntityNotFoundException(String.format("Non esiste ordine con id: [%s]", id))),
-                OrdineDto.class);
+        Ordine ordine = ordineDao.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("Non esiste un articolo con id: [%s]", id)));
+        return modelMapper.map(ordine, OrdineDto.class);
     }
 
 
