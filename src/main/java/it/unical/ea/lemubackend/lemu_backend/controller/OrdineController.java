@@ -22,41 +22,21 @@ public class OrdineController {
 
 
     @PostMapping("/ordine")
-    public ResponseEntity<ApiResponse<OrdineDto>> add(@RequestBody OrdineDto ordine, @RequestParam String jwt) {
-        if (ordineService.save(ordine, jwt)) {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Prodotto aggiunto con successo", ordine));
-        } else {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>(false, "Prodotto non aggiunto", null));
-        }
+    public ResponseEntity<OrdineDto> add(@RequestBody OrdineDto ordine, @RequestParam String jwt) {
+     return ResponseEntity.ok(ordineService.save(ordine, jwt));
+
     }
 
     @GetMapping("/ordini")
-    public ResponseEntity<ApiResponse<Collection<OrdineDto>>> findbyUser(String jwt) {
-        try {
-            Collection<OrdineDto> ordini = ordineService.findOrderbyUser(jwt);
-            if (ordini != null && !ordini.isEmpty()) {
-                return ResponseEntity.ok(new ApiResponse<>(true, "ordini presi con successo", ordini));
-            } else {
-                return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                        .body(new ApiResponse<>(false, "Nessun ordine trovato", null));
-            }
-        } catch (Exception e) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(new ApiResponse<>(false, "Errore durante il recupero degli ordini", null));
-        }
+    public ResponseEntity<Collection<OrdineDto>> findbyUser(String jwt) {
+        Collection<OrdineDto> ordineDtos = ordineService.findOrderbyUser(jwt);
+        return (ordineDtos != null) ? ResponseEntity.ok(ordineDtos) : ResponseEntity.notFound().build();
     }
 
     @GetMapping("/ordine/{orderId}")
-    public ResponseEntity<ApiResponse<OrdineDto>> getById(@PathVariable("orderId") Long id) {
+    public ResponseEntity<OrdineDto> getById(@PathVariable("orderId") Long id) {
         OrdineDto ordine = ordineService.getById(id);
-        if (ordine != null) {
-            return ResponseEntity.ok(new ApiResponse<>(true, "Ordine trovato con successo", ordine));
-        } else {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(new ApiResponse<>(false, "Ordine non trovato", null));
-        }
-    }
+        return (ordine != null) ? ResponseEntity.ok(ordine) : ResponseEntity.notFound().build();    }
 
 
 
