@@ -30,7 +30,8 @@ public class SecurityConfiguration {
             "/utente-api/add",
             // Login
             "/utente-api/login",
-            "/prodottocontroller-api/all"
+            "/prodottocontroller-api/all",
+            "/swagger-ui.html"
     };
 
 

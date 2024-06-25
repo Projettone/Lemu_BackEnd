@@ -28,7 +28,7 @@ public class OrdineController {
     }
 
     @GetMapping("/all/{id}")
-    public ResponseEntity<Collection<OrdineDto>> findbyUser(@PathVariable("Id") Long id) {
+    public ResponseEntity<Collection<OrdineDto>> findbyUser(@PathVariable("id") Long id) {
         Collection<OrdineDto> ordineDtos = ordineService.findOrderbyUser(id);
         return (ordineDtos != null) ? ResponseEntity.ok(ordineDtos) : ResponseEntity.notFound().build();
     }
