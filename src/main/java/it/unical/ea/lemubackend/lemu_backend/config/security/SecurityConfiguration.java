@@ -9,6 +9,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,6 +20,20 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfiguration {
+
+
+    private static final String[] PATH_WHITELIST = {
+            // -- Swagger UI v3
+            "/v3/api-docs/**",
+            "/swagger-ui/**",
+            // Registration
+            "/utente-api/add",
+            // Login
+            "/utente-api/login",
+            "/prodottocontroller-api/all"
+    };
+
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder(12);
@@ -34,12 +49,11 @@ public class SecurityConfiguration {
     @Order(1)
     public SecurityFilterChain filterChainJWT(HttpSecurity http) throws Exception {
         return http
-                .securityMatcher("/api/v1/register", "/api/v1/login", "/api/v1/authenticate")
-                .authorizeHttpRequests(auth -> {
-                    auth.requestMatchers("/api/v1/register","/api/v1/login", "/api/v1/authenticate").permitAll();
+                .authorizeHttpRequests( auth -> {
+                    auth.requestMatchers(PATH_WHITELIST).permitAll();
                     auth.anyRequest().authenticated();
-                })
-                .csrf(csrf -> csrf.disable())
+                }).httpBasic(Customizer.withDefaults())
+                .csrf(AbstractHttpConfigurer::disable).formLogin(Customizer.withDefaults())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
@@ -48,23 +62,22 @@ public class SecurityConfiguration {
 
     @Bean
     @Order(2)
-    public SecurityFilterChain filterChainGoogle(HttpSecurity http) throws Exception {
-        return http
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/", "/home", "/google_login", "/logout", "/logoutSuccess").permitAll()
-                        .anyRequest().authenticated()
-                )
-                .oauth2Login(Customizer.withDefaults())
-                .oauth2Client(Customizer.withDefaults())
-                .logout(lgt -> lgt
-                        .logoutUrl("/logout")
-                        .logoutSuccessUrl("/logoutSuccess")
-                        .permitAll()
-                        .invalidateHttpSession(true)
-                        .clearAuthentication(true)
-                        .deleteCookies("JSESSIONID")
-                )
-                .build();
+    public SecurityFilterChain filterChainOAuth2(HttpSecurity http) throws Exception {
+        return http.
+                logout(
+                        lgt -> {
+                            lgt.permitAll();
+                            lgt.invalidateHttpSession(true);
+                            lgt.clearAuthentication(true);
+                            lgt.deleteCookies("JSESSIONID");
+                        }
+                ).authorizeHttpRequests(
+                        auth -> {
+                            auth.requestMatchers(PATH_WHITELIST).permitAll();
+                            auth.anyRequest().authenticated();
+                        }
+                ).oauth2Login(Customizer.withDefaults())
+                .oauth2Client(Customizer.withDefaults()).build();
     }
 
 

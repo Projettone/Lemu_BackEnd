@@ -6,6 +6,7 @@ import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
 import jakarta.servlet.http.HttpServletRequest;
+import lombok.Getter;
 import org.springframework.http.HttpHeaders;
 
 import java.text.ParseException;
@@ -19,13 +20,10 @@ public class TokenStore {
     // This key has been randomly generated, of course this should not be public in real projects! :)
     private final String secretKey = "23778sah9021-12123-12s-as-12a-AS_12xoiJN-SHWQ98";
 
+    @Getter
     private final static TokenStore instance = new TokenStore();
 
     private TokenStore() {
-    }
-
-    public static TokenStore getInstance() {
-        return instance;
     }
 
     public String createToken(Map<String, Object> claims) throws JOSEException {
