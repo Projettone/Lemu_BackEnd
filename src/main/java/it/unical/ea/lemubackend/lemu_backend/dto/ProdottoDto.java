@@ -26,17 +26,12 @@ public class ProdottoDto{
 
     private String categoria;
 
-    private String immagineProdotto;
+    private List<Long> idrecensioni;
 
-    private double valutazione;
-
-    private int numeroRecensioni;
-
-    private List<Recensione> recensione;
-
-    private Utente utente;
+    private Long idutente;
 
     private int disponibilita;
 
+    private String immagineProdotto;
 
 }

@@ -31,10 +31,6 @@ public class Prodotto {
     @Column(name = "categoria")
     private String categoria;
 
-    @Lob
-    @Column(name = "immagineProdotto")
-    private String immagineProdotto;
-
     @OneToMany(mappedBy = "prodotto", fetch = FetchType.LAZY)
     private List<Recensione> recensione;
 
@@ -44,4 +40,8 @@ public class Prodotto {
 
     @Column(name = "disponibilita")
     private Boolean disponibilita;
+
+    @Column(columnDefinition = "TEXT")
+    private String immagineBase64;
+
 }

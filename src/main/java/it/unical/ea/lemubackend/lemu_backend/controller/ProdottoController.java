@@ -21,13 +21,19 @@ public class ProdottoController {
     private final ProdottoService prodottoService;
 
 
-
+/*
     @PostMapping("/add")
     public ResponseEntity<ProdottoDto> add(@RequestBody @Valid ProdottoDto prodotto, @RequestParam String jwt) {
         return ResponseEntity.ok(prodottoService.save(prodotto, jwt));
 
     }
 
+ */
+
+    @PostMapping("/add")
+    public void add(@RequestBody ProdottoDto prodotto) {
+        prodottoService.save(prodotto);
+    }
 
     @GetMapping("/all")
     public ResponseEntity<Collection<ProdottoDto>> findAll() {

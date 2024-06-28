@@ -6,6 +6,7 @@ import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Prodotto;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.ProdottoDto;
+import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -23,12 +24,14 @@ public class ProdottoServiceImpl implements  ProdottoService {
     private final ProdottoDao prodottoDao;
     private final UtenteDao utenteDao;
     private final ModelMapper modelMapper;
+    private final UtenteService utenteService;
 
 
 
 
     @Override
     public ProdottoDto save(ProdottoDto prodottoDto, String encodedJwt) {
+        /*
         try {
             // Decodifica del JWT
             String jwt = new String(Base64.getDecoder().decode(encodedJwt));
@@ -57,6 +60,9 @@ public class ProdottoServiceImpl implements  ProdottoService {
             e.printStackTrace(); // Puoi gestire le eccezioni in modo più appropriato a seconda del tuo caso d'uso
             return null;
         }
+
+         */
+        return  null;
     }
 
 
@@ -75,8 +81,13 @@ public class ProdottoServiceImpl implements  ProdottoService {
     }
 
     @Override
-    public void save(Prodotto prodotto) {
-        prodottoDao.save(prodotto);
+    public void save(ProdottoDto prodottoDto) {
+        Prodotto p = modelMapper.map(prodottoDto, Prodotto.class);
+        p.setImmagineBase64(prodottoDto.getImmagineProdotto());
+        UtenteDto utenteDto = utenteService.getById(prodottoDto.getIdutente());
+        Utente utente =  modelMapper.map(utenteDto, Utente.class);
+        p.setUtente(utente);
+        prodottoDao.save(p);
     }
 
 

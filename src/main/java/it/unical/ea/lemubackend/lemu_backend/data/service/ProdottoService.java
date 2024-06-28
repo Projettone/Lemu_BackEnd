@@ -10,5 +10,5 @@ public interface ProdottoService {
     ProdottoDto save(ProdottoDto prodottoDto, String jwt);
     Collection<ProdottoDto> findAll();
     ProdottoDto getById(Long id);
-    void save(Prodotto prodotto);
+    void save(ProdottoDto prodotto);
 }
