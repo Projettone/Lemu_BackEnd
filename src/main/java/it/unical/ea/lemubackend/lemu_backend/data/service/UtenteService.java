@@ -1,17 +1,25 @@
 package it.unical.ea.lemubackend.lemu_backend.data.service;
 
+import com.nimbusds.jose.JOSEException;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
+import it.unical.ea.lemubackend.lemu_backend.dto.UtenteLoginDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+/*
 import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.user.OAuth2User;
+
+ */
 import org.springframework.ui.Model;
 
 public interface UtenteService {
 
     public void save(Utente utente);
+
+    ResponseEntity<?> registerUser(UtenteRegistrazioneDto utenteRegistrazioneDto) throws JOSEException;
 
     UtenteDto getById(Long id);
 

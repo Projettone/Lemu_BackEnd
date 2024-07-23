@@ -4,7 +4,6 @@ import com.nimbusds.jose.JOSEException;
 import it.unical.ea.lemubackend.lemu_backend.config.ApiResponse;
 import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
-import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.data.service.UtenteService;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteLoginDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
@@ -20,9 +19,10 @@ import org.springframework.web.bind.annotation.*;
 
 
 import java.util.Map;
+import java.util.Objects;
 
 @RequiredArgsConstructor
-@RequestMapping(path="/api/v1")
+@RequestMapping(path="/utente-api")
 @RestController
 @CrossOrigin(origins = "*", allowedHeaders = "*")
 public class UtenteController {
@@ -44,43 +44,22 @@ public class UtenteController {
 
 
     @PostMapping(path = "/authenticate")
-    @ResponseStatus(HttpStatus.OK)
-    public void authenticate(@RequestParam("email") String email, @RequestParam("password") String password, HttpServletResponse response) throws JOSEException {
+    public ResponseEntity<ApiResponse<String>> authenticate(@RequestParam("email") String email, @RequestParam("password") String password) throws JOSEException {
+        System.out.println("PROCEDO CON AUTENTICATIOZE");
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
-        String token = TokenStore.getInstance().createToken(Map.of("username",  email));
-        response.addHeader(HttpHeaders.AUTHORIZATION, "Bearer " + token);
+        String token = TokenStore.getInstance().createToken(Map.of("email", email));
+        return ResponseEntity.ok(new ApiResponse<>(true, HttpStatus.OK.toString(), token));
     }
+
 
     @PostMapping("/register")
-    public ResponseEntity<ApiResponse<Utente>> register(@RequestBody UtenteRegistrazioneDto utenteRegistrazioneDto) {
-        String credenzialiEmail = utenteRegistrazioneDto.getCredenzialiEmail();
-        String credenzialiPassword = utenteRegistrazioneDto.getCredenzialiPassword();
-        String nome = utenteRegistrazioneDto.getNome();
-        String cognome = utenteRegistrazioneDto.getCognome();
-
-        if (utenteDao.findByCredenzialiEmail(credenzialiEmail).isPresent()) {
-            return ResponseEntity.status(HttpStatus.CONFLICT)
-                    .body(new ApiResponse<>(false, "Username già esistente", null));
-        }
-
-        Utente utente = new Utente(credenzialiEmail, passwordEncoder.encode(credenzialiPassword), nome, cognome);
-        utenteDao.save(utente);
-        return ResponseEntity.ok(new ApiResponse<>(true, "Registrazione avvenuta con successo", utente));
-    }
-
-
-    @PostMapping("/login")
-    public ResponseEntity<ApiResponse<String>> login(@RequestBody UtenteLoginDto utenteLoginDto) throws JOSEException {
-        String credenzialiEmail = utenteLoginDto.getCredenzialiEmail();
-        String credenzialiPassword = utenteLoginDto.getCredenzialiPassword();
-
-        if (utenteDao.findByCredenzialiEmail(credenzialiEmail).isPresent()) {
-            authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(credenzialiEmail, credenzialiPassword));
-            String token = TokenStore.getInstance().createToken(Map.of("email",  credenzialiEmail));
-            return ResponseEntity.ok(new ApiResponse<>(true, "Login effettuato con successo", token));
-        }else{
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
-                    .body(new ApiResponse<>(false, "Errore, credenziali errate", null));
+    public ApiResponse<String> registerUser(@RequestBody UtenteRegistrazioneDto utenteRegistrazioneDto) {
+        try {
+            ResponseEntity<?> response = utenteService.registerUser(utenteRegistrazioneDto);
+            String token = TokenStore.getInstance().extractToken(response);
+            return new ApiResponse<>(true, response.getStatusCode().toString(), token);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, HttpStatus.BAD_REQUEST.toString(), "Error: " + e.getMessage());
         }
     }
 

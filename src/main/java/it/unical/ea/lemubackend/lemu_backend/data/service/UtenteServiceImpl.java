@@ -1,36 +1,78 @@
 package it.unical.ea.lemubackend.lemu_backend.data.service;
 
+import com.nimbusds.jose.JOSEException;
+import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.Credenziali;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
+import it.unical.ea.lemubackend.lemu_backend.dto.UtenteLoginDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
 import jakarta.persistence.EntityNotFoundException;
-import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
-import org.springframework.security.oauth2.core.user.OAuth2User;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 
 @Service
-@RequiredArgsConstructor
-public class UtenteServiceImpl implements UtenteService{
+public class UtenteServiceImpl implements UtenteService, UserDetailsService {
     private final UtenteDao utenteDao;
     private final ModelMapper modelMapper;
+    private final AuthenticationManager authenticationManager;
+    private final TokenStore tokenStore;
+    private final PasswordEncoder passwordEncoder;
+
+    @Autowired
+    public UtenteServiceImpl(UtenteDao utenteDao, ModelMapper modelMapper, @Lazy AuthenticationManager authenticationManager, TokenStore tokenStore, PasswordEncoder passwordEncoder) {
+        this.utenteDao = utenteDao;
+        this.modelMapper = modelMapper;
+        this.authenticationManager = authenticationManager;
+        this.tokenStore = tokenStore;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     @Override
     public void save(Utente utente) { utenteDao.save(utente); }
+
+    @Override
+    public ResponseEntity<?> registerUser(UtenteRegistrazioneDto utenteRegistrazioneDto) throws JOSEException {
+        if(utenteDao.findByCredenzialiEmail(utenteRegistrazioneDto.getCredenzialiEmail()).isPresent()){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Username already exists");
+        }
+
+        Utente utente = new Utente();
+        utente.setNome(utenteRegistrazioneDto.getNome());
+        utente.setCognome(utenteRegistrazioneDto.getCognome());
+        Credenziali c = new Credenziali(utenteRegistrazioneDto.getCredenzialiEmail(), passwordEncoder.encode(utenteRegistrazioneDto.getCredenzialiPassword()));
+        utente.setCredenziali(c);
+        utente.setIsAdmin(false);
+
+        utenteDao.save(utente);
+
+        String token = tokenStore.createToken(Map.of("email", c.getEmail()));
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("Authorization", "Bearer " + token);
+        return ResponseEntity.ok().headers(headers).build();
+    }
+
     @Override
     public UtenteDto getById(Long id) {
         Utente utente = utenteDao.findById(id).orElseThrow(() -> new EntityNotFoundException(String.format("Non esiste un utente con id: [%s]", id)));
