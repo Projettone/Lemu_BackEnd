@@ -14,11 +14,13 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
 
 @Component
 public class RequestFilter extends OncePerRequestFilter {
 
 	private final UtenteServiceImpl utenteService;
+
 
 	public RequestFilter(UtenteServiceImpl utenteService) {
 		this.utenteService = utenteService;
@@ -27,16 +29,22 @@ public class RequestFilter extends OncePerRequestFilter {
 	@Override
 	protected void doFilterInternal(@NonNull HttpServletRequest request, @NonNull HttpServletResponse response, @NonNull FilterChain chain) throws ServletException, IOException {
 		String token = TokenStore.getInstance().getToken(request);
-		if(!"invalid".equals(token)) {
+		System.out.println("TOKEN: " + token);
+
+		if (token != null && !"invalid".equals(token)) {
 			try {
 				String username = TokenStore.getInstance().getUser(token);
 				UserDetails user = utenteService.loadUserByUsername(username);
-				UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
-				usernamePasswordAuthenticationToken.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
-				SecurityContextHolder.getContext().setAuthentication(usernamePasswordAuthenticationToken);
-			} catch (Exception ignored) {
+				if (user != null) {
+					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
+					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
+					SecurityContextHolder.getContext().setAuthentication(authentication);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
 		}
+
 		chain.doFilter(request, response);
 	}
 }

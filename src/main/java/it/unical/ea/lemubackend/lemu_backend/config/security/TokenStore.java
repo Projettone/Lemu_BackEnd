@@ -5,27 +5,37 @@ import com.nimbusds.jose.crypto.MACSigner;
 import com.nimbusds.jose.crypto.MACVerifier;
 import com.nimbusds.jwt.JWTClaimsSet;
 import com.nimbusds.jwt.SignedJWT;
+import jakarta.annotation.PostConstruct;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.Getter;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Component;
 
 import java.text.ParseException;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Map;
+import java.util.Objects;
 
+@Component
 public class TokenStore {
 
-    // This key has been randomly generated, of course this should not be public in real projects! :)
-    private final String secretKey = "23778sah9021-12123-12s-as-12a-AS_12xoiJN-SHWQ98";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
     @Getter
-    private final static TokenStore instance = new TokenStore();
+    private static TokenStore instance;
 
-    private TokenStore() {
+    @PostConstruct
+    public void init() {
+        instance = this;
+        if (secretKey == null) {
+            throw new IllegalArgumentException("JWT secret key is not set.");
+        }
     }
-
     public String createToken(Map<String, Object> claims) throws JOSEException {
         Instant issuedAt = Instant.now().truncatedTo(ChronoUnit.SECONDS);
         Instant notBefore = issuedAt.plus(5, ChronoUnit.SECONDS);
@@ -66,5 +76,10 @@ public class TokenStore {
         if(header != null && header.startsWith("Bearer "))
             return header.replace("Bearer ", "");
         return "invalid";
+    }
+
+    public String extractToken(ResponseEntity<?> response){
+        String authorizationHeader = Objects.requireNonNull(response.getHeaders().get("Authorization")).get(0);
+        return authorizationHeader.substring("Bearer ".length());
     }
 }
