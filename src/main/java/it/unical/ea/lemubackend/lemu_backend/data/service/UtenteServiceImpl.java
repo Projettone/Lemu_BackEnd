@@ -1,23 +1,23 @@
 package it.unical.ea.lemubackend.lemu_backend.data.service;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
+import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
+import com.google.api.client.http.javanet.NetHttpTransport;
+import com.google.api.client.json.jackson2.JacksonFactory;
 import com.nimbusds.jose.JOSEException;
 import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Credenziali;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
-import it.unical.ea.lemubackend.lemu_backend.dto.UtenteLoginDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
 import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -26,7 +26,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
+import java.io.IOException;
+import java.security.GeneralSecurityException;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -36,15 +38,16 @@ import java.util.Optional;
 public class UtenteServiceImpl implements UtenteService, UserDetailsService {
     private final UtenteDao utenteDao;
     private final ModelMapper modelMapper;
-    private final AuthenticationManager authenticationManager;
     private final TokenStore tokenStore;
     private final PasswordEncoder passwordEncoder;
 
+    @Value("${spring.security.oauth2.client.registration.google.client-id}")
+    private String clientId;
+
     @Autowired
-    public UtenteServiceImpl(UtenteDao utenteDao, ModelMapper modelMapper, @Lazy AuthenticationManager authenticationManager, TokenStore tokenStore, PasswordEncoder passwordEncoder) {
+    public UtenteServiceImpl(UtenteDao utenteDao, ModelMapper modelMapper, TokenStore tokenStore, PasswordEncoder passwordEncoder) {
         this.utenteDao = utenteDao;
         this.modelMapper = modelMapper;
-        this.authenticationManager = authenticationManager;
         this.tokenStore = tokenStore;
         this.passwordEncoder = passwordEncoder;
     }
@@ -87,31 +90,56 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
     }
 
 
-    /*
     @Override
-    public UtenteRegistrazioneDto googleAuthentication(Model model,
-                                                       @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
-                                                       @AuthenticationPrincipal OAuth2User oauth2User) {
-        model.addAttribute("userName", oauth2User.getName());
-        model.addAttribute("clientName", authorizedClient.getClientRegistration().getClientName());
-        model.addAttribute("userAttributes", oauth2User.getAttributes());
+    public ResponseEntity<?> googleAuthentication(String idToken) throws JOSEException, GeneralSecurityException, IOException {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(), new JacksonFactory())
+                .setAudience(Collections.singletonList(clientId))
+                .build();
 
-        String email = oauth2User.getAttributes().get("email").toString();
-        System.out.println("ATRTIBUTI:" + oauth2User.getAttributes());
+        GoogleIdToken token = verifier.verify(idToken);
+        if (idToken != null) {
+            GoogleIdToken.Payload payload = token.getPayload();
 
-        Optional<Utente> optionalUtente = utenteDao.findByCredenzialiEmail(email);
+            String userId = payload.getSubject();
+            String email = payload.getEmail();
+            boolean emailVerified = payload.getEmailVerified();
+            String name = (String) payload.get("name");
+            String pictureUrl = (String) payload.get("picture");
+            String locale = (String) payload.get("locale");
+            String familyName = (String) payload.get("family_name");
+            String givenName = (String) payload.get("given_name");
 
-        if(optionalUtente.isEmpty()) {
-            optionalUtente = Optional.of(new Utente(email,
-                    oauth2User.getAttributes().get("given_name").toString(),
-                    oauth2User.getAttributes().get("family_name").toString()));
-            utenteDao.save(optionalUtente.get());
+            System.out.println("User ID: " + userId);
+            System.out.println("Email: " + email);
+            System.out.println("Email Verified: " + emailVerified);
+            System.out.println("Name: " + name);
+            System.out.println("Picture URL: " + pictureUrl);
+            System.out.println("Locale: " + locale);
+            System.out.println("Family Name: " + familyName);
+            System.out.println("Given Name: " + givenName);
+
+
+            Optional<Utente> existingUser = utenteDao.findByCredenzialiEmail(email);
+            if (existingUser.isEmpty()) {
+                Utente utente = new Utente();
+                utente.setNome(givenName);
+                utente.setCognome(familyName);
+                Credenziali c = new Credenziali(email, "");
+                utente.setCredenziali(c);
+                utente.setIsAdmin(false);
+
+                utenteDao.save(utente);
+            }
+
+            String jwtToken = tokenStore.createToken(Map.of("email", email));
+            HttpHeaders headers = new HttpHeaders();
+            headers.add("Authorization", "Bearer " + jwtToken);
+            return ResponseEntity.ok().headers(headers).build();
         }
-        return modelMapper.map(optionalUtente, UtenteRegistrazioneDto.class);
-
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed authentication");
     }
 
-     */
+
 
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

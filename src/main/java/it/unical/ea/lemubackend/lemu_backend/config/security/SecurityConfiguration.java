@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfiguration {
 
 
+
     private static final String[] PATH_WHITELIST = {
             // -- Swagger UI v3
             "/v3/api-docs/**",
@@ -34,6 +35,7 @@ public class SecurityConfiguration {
             "/utente-api/login",
             "/utente-api/register",
             "/utente-api/authenticate",
+            "/utente-api/google_login",
 
             "/prodottocontroller-api/add",
             "/prodottocontroller-api/all",
@@ -62,16 +64,13 @@ public class SecurityConfiguration {
                 })
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .formLogin(Customizer.withDefaults())
-                .httpBasic(Customizer.withDefaults())
-                .oauth2Login(Customizer.withDefaults())
-                .oauth2Client(Customizer.withDefaults())
+
                 .logout(logout -> logout
                         .permitAll()
                         .invalidateHttpSession(true)
                         .clearAuthentication(true)
                         .deleteCookies("JSESSIONID")
-                );
+                ).addFilterBefore(requestFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

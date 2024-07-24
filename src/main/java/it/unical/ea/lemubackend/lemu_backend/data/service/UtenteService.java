@@ -3,17 +3,11 @@ package it.unical.ea.lemubackend.lemu_backend.data.service;
 import com.nimbusds.jose.JOSEException;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
-import it.unical.ea.lemubackend.lemu_backend.dto.UtenteLoginDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
-/*
-import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
-import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
-import org.springframework.security.oauth2.core.user.OAuth2User;
 
- */
-import org.springframework.ui.Model;
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 
 public interface UtenteService {
 
@@ -25,12 +19,6 @@ public interface UtenteService {
 
     UtenteDto getByCEmail(String email);
 
-    /*UtenteRegistrazioneDto googleAuthentication(Model model,
-                                                @RegisteredOAuth2AuthorizedClient OAuth2AuthorizedClient authorizedClient,
-                                                @AuthenticationPrincipal OAuth2User oauth2Use);
-
-     */
-
-
+    ResponseEntity<?> googleAuthentication(String idToken) throws JOSEException, GeneralSecurityException, IOException;
 
 }
