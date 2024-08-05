@@ -39,6 +39,7 @@ public class SecurityConfiguration {
 
             "/prodottocontroller-api/add",
             "/prodottocontroller-api/all",
+            "/swagger-ui/index.html",
             "/swagger-ui.html"
     };
 

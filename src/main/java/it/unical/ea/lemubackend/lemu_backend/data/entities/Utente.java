@@ -81,6 +81,22 @@ public class Utente {
     @OneToMany(mappedBy = "utente", fetch = FetchType.LAZY)
     private List<Ordine> ordini;
 
+    @Override
+    public String toString() {
+        return "Utente{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", cognome='" + cognome + '\'' +
+                ", isAdmin=" + isAdmin +
+                ", bannato=" + bannato +
+                ", immagineProfilo='" + immagineProfilo + '\'' +
+                ", indirizzo=" + indirizzo +
+                ", credenziali=" + credenziali +
+                ", carrello=" + (carrello != null ? carrello.getId() : "null") +
+                ", wishlist=" + (wishlist != null ? wishlist.getId() : "null") +
+                '}';
+    }
+
 
     public Utente(String email, String password, String firstName, String lastName) {
         this.credenziali = new Credenziali();

@@ -33,8 +33,8 @@ public class RequestFilter extends OncePerRequestFilter {
 
 		if (token != null && !"invalid".equals(token)) {
 			try {
-				String username = TokenStore.getInstance().getUser(token);
-				UserDetails user = utenteService.loadUserByUsername(username);
+				String email = TokenStore.getInstance().getUserEmail(token);
+				UserDetails user = utenteService.loadUserByUsername(email);
 				if (user != null) {
 					UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(user, null, user.getAuthorities());
 					authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));

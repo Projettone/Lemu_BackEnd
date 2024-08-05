@@ -8,6 +8,7 @@ import com.nimbusds.jose.JOSEException;
 import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Credenziali;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.Indirizzo;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
@@ -28,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
+import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -139,16 +141,63 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed authentication");
     }
 
+    @Override
+    public UtenteDto getUserByToken(String token) throws ParseException, JOSEException {
+        Optional<Utente> utente = tokenStore.getUser(token);
+        if (utente.isPresent()) {
+            return modelMapper.map(utente.get(), UtenteDto.class);
+        } else {
+            throw new RuntimeException("User not found");
+        }
+    }
+
+    @Override
+    public void updatePassword(String token, String newPassword) throws ParseException, JOSEException {
+        Optional<Utente> utenteOptional = tokenStore.getUser(token);
+        if (utenteOptional.isPresent()) {
+            Utente utente = utenteOptional.get();
+            utente.getCredenziali().setPassword(passwordEncoder.encode(newPassword));
+            utenteDao.save(utente);
+        } else {
+            throw new EntityNotFoundException("User not found");
+        }
+    }
+
+
+    @Override
+    public void updateShippingAddress(String token, Indirizzo address) throws ParseException, JOSEException {
+        Optional<Utente> utenteOptional = tokenStore.getUser(token);
+        if (utenteOptional.isPresent()) {
+            Utente utente = utenteOptional.get();
+            utente.setIndirizzo(address);
+            System.out.println("ADDRESS: "+address);
+            utenteDao.save(utente);
+        } else {
+            throw new EntityNotFoundException("User not found");
+        }
+    }
 
 
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        if("admin".equals(email))
-            return new User(email, new BCryptPasswordEncoder(12).encode("strongPassword"), List.of(new SimpleGrantedAuthority("ROLE_ADMIN")));
         Optional<Utente> utente = utenteDao.findByCredenzialiEmail(email);
-        if(utente.isPresent()) return new User(email, utente.get().getCredenziali().getPassword(), List.of(new SimpleGrantedAuthority("ROLE_USER")));
+        if(utente.isPresent()){
+            Utente user = utente.get();
+            List<SimpleGrantedAuthority> authorities;
+            if(user.getIsAdmin()){
+                authorities = List.of(new SimpleGrantedAuthority("ROLE_ADMIN"));
+            } else {
+                authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
+            }
+            return new User(
+                    user.getCredenziali().getEmail(),
+                    user.getCredenziali().getPassword(),
+                    authorities
+            );
+        }
         throw new UsernameNotFoundException("User not found");
     }
+
 
 
 

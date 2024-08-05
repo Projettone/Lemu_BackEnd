@@ -30,20 +30,17 @@ public class OrdineServiceImpl implements OrdineService {
     @Override
     public OrdineDto save(OrdineDto ordineDto, String encodedJwt) {
         try {
+
             // Decodifica del JWT base64 per ottenere il token JWT effettivo
             String jwt = new String(Base64.getDecoder().decode(encodedJwt));
 
-            // Ottiene l'username (o email) dall'oggetto JWT usando il metodo TokenStore.getUser
-            String username = TokenStore.getInstance().getUser(jwt);
-
-            // Trova l'utente in base all'email
-            Utente utente = utenteDao.findByCredenzialiEmail(username).orElse(null);
+            Optional<Utente> utente = TokenStore.getInstance().getUser(jwt);
 
             // Se l'utente esiste, salva l'ordine
             if (utente != null) {
                 // Mappa OrdineDto a Ordine
                 Ordine ordine = modelMapper.map(ordineDto, Ordine.class);
-                ordine.setUtente(utente); // Associa l'utente all'ordine
+                ordine.setUtente(utente.get()); // Associa l'utente all'ordine
 
                 // Salva l'ordine nel database
                 ordine = ordineDao.save(ordine);
