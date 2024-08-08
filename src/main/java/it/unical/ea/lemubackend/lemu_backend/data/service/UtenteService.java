@@ -28,4 +28,10 @@ public interface UtenteService {
     void updatePassword(String token, String newPassword) throws ParseException, JOSEException;
     void updateShippingAddress(String token, Indirizzo address) throws ParseException, JOSEException;
 
+    Boolean banUser(String email);
+
+    Boolean unbanUser(String email);
+    Boolean makeAdmin(String email);
+    Boolean revokeAdmin(String email);
+
 }

@@ -6,7 +6,9 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.nimbusds.jose.JOSEException;
 import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
+import it.unical.ea.lemubackend.lemu_backend.data.dao.CouponDao;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.Coupon;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Credenziali;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Indirizzo;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
@@ -24,7 +26,6 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
@@ -69,6 +70,7 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
         Credenziali c = new Credenziali(utenteRegistrazioneDto.getCredenzialiEmail(), passwordEncoder.encode(utenteRegistrazioneDto.getCredenzialiPassword()));
         utente.setCredenziali(c);
         utente.setIsAdmin(false);
+        utente.setSaldo(0);
 
         utenteDao.save(utente);
 
@@ -176,6 +178,52 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
             throw new EntityNotFoundException("User not found");
         }
     }
+
+    @Override
+    public Boolean banUser(String email) {
+        Optional<Utente> utenteOptional = utenteDao.findByCredenzialiEmail(email);
+        if (utenteOptional.isPresent()) {
+            utenteDao.banUserByEmail(email);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean unbanUser(String email) {
+        Optional<Utente> utenteOptional = utenteDao.findByCredenzialiEmail(email);
+        if (utenteOptional.isPresent()) {
+            utenteDao.unbanUserByEmail(email);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean makeAdmin(String email) {
+        Optional<Utente> utenteOptional = utenteDao.findByCredenzialiEmail(email);
+        if (utenteOptional.isPresent()) {
+            utenteDao.makeAdminByEmail(email);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    @Override
+    public Boolean revokeAdmin(String email) {
+        Optional<Utente> utenteOptional = utenteDao.findByCredenzialiEmail(email);
+        if (utenteOptional.isPresent()) {
+            utenteDao.revokeAdminByEmail(email);
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+
 
 
 

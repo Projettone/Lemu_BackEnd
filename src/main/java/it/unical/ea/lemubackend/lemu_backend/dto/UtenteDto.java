@@ -30,4 +30,5 @@ public class UtenteDto {
 
     @Email
     private String email; //credenziali
+    private Double saldo;
 }

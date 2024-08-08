@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
@@ -99,7 +100,6 @@ public class UtenteController {
             String authHeader = request.getHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
                 String token = TokenStore.getInstance().getToken(request);
-                System.out.println("INDIRIZZOOO: "+address);
                 utenteService.updateShippingAddress(token, address);
                 return new ApiResponse<>(true, HttpStatus.OK.toString(), "Email updated successfully");
             } else {
@@ -111,7 +111,49 @@ public class UtenteController {
     }
 
 
+    @PostMapping("/ban-user")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Boolean> banUser(@RequestParam("email") String email) {
+        try {
+            boolean result = utenteService.banUser(email);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
 
 
+    @PostMapping("/unban-user")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Boolean> unbanUser(@RequestParam("email") String email) {
+        try {
+            boolean result = utenteService.unbanUser(email);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/make-admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Boolean> makeAdmin(@RequestParam("email") String email) {
+        try {
+            boolean result = utenteService.makeAdmin(email);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/revoke-admin")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Boolean> revokeAdmin(@RequestParam("email") String email) {
+        try {
+            boolean result = utenteService.revokeAdmin(email);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
+        }
+    }
 
 }
