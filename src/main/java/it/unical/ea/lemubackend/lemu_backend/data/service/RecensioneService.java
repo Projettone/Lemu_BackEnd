@@ -13,4 +13,6 @@ public interface RecensioneService {
     Collection<RecensioneDto> findAll();
 
     RecensioneDto getById(Long id);
+
+    List<RecensioneDto> findAllByIdProdotto(Long idProdotto);
 }

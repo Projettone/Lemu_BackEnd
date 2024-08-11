@@ -42,4 +42,12 @@ public class RecensioneServiceImpl implements RecensioneService{
                 .map(recensione -> modelMapper.map(recensione, RecensioneDto.class))
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<RecensioneDto> findAllByIdProdotto(Long idProdotto) {
+        List<Recensione> recensioni = recensioneDao.findAllByProdottoId(idProdotto);
+        return recensioni.stream()
+                .map(recensione -> modelMapper.map(recensione, RecensioneDto.class))
+                .toList();
+    }
 }

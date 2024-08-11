@@ -17,4 +17,6 @@ public interface RecensioneDao extends JpaRepository<Recensione, Long> {
 
     List<Recensione> findAllByRating(Float rating);
 
+    List<Recensione> findAllByProdottoId(Long idProdotto);
+
 }

@@ -29,18 +29,19 @@ public class SecurityConfiguration {
             // -- Swagger UI v3
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            // Registration
             "/utente-api/add",
-            // Login
-            "/utente-api/login",
+            // Utente
             "/utente-api/register",
             "/utente-api/authenticate",
             "/utente-api/google_login",
+            "utente-api/search",
+            // Recensioni
+            "/recensione-api/getByIdProdotto/**",
 
             "/prodottocontroller-api/add",
             "/prodottocontroller-api/all",
             "/swagger-ui/index.html",
-            "/swagger-ui.html"
+            "/swagger-ui.html",
     };
 
 
