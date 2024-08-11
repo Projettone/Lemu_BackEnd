@@ -9,6 +9,8 @@ import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.CouponDto;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -78,5 +80,13 @@ public class CouponServiceImpl implements CouponService{
                 .collect(Collectors.toList());
         return ResponseEntity.ok(couponDto);
     }
+
+    @Override
+    public ResponseEntity<Page<CouponDto>> getPagedCoupons(Pageable pageable) {
+        Page<Coupon> pagedCoupons = couponDao.findAll(pageable);
+        Page<CouponDto> pagedCouponDtos = pagedCoupons.map(coupon -> modelMapper.map(coupon, CouponDto.class));
+        return ResponseEntity.ok(pagedCouponDtos);
+    }
+
 
 }

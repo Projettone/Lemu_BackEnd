@@ -4,6 +4,9 @@ import it.unical.ea.lemubackend.lemu_backend.data.service.CouponService;
 import it.unical.ea.lemubackend.lemu_backend.dto.CouponDto;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -45,4 +48,16 @@ public class CouponController {
     public ResponseEntity<List<CouponDto>> getAllValid(){
         return couponService.getAllValid();
     }
+
+    @GetMapping("/paged-coupons")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<Page<CouponDto>> getPagedCoupons(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        Pageable pageable = PageRequest.of(page, size);
+        return couponService.getPagedCoupons(pageable);
+
+    }
+
 }

@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import javax.swing.text.html.Option;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;;
 import java.util.List;
 import java.util.Optional;
 
@@ -23,5 +24,5 @@ public interface CouponDao extends JpaRepository<Coupon, Long>, JpaSpecification
     List<Coupon> getAllByValido(Boolean valido);
 
     Optional<Coupon> findCouponByCodice(String codice);
-
+    Page<Coupon> findAllByValidoTrue(Pageable pageable);
 }
