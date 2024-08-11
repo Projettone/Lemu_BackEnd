@@ -1,13 +1,20 @@
 package it.unical.ea.lemubackend.lemu_backend.controller;
 
+import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.data.service.RecensioneService;
 import it.unical.ea.lemubackend.lemu_backend.dto.RecensioneDto;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RequiredArgsConstructor
 @RequestMapping(path="/recensione-api")
@@ -26,4 +33,28 @@ public class RecensioneController
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
-    }}
+    }
+
+
+    @GetMapping("/get-reviews")
+    public ResponseEntity<Page<RecensioneDto>> getRecensioniByUtente(HttpServletRequest request, @RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = TokenStore.getInstance().getToken(request);
+                Optional<Utente> u = TokenStore.getInstance().getUser(token);
+                if (u.isPresent()){
+                    Pageable pageable = PageRequest.of(page, size);
+                    return recensioneService.findAllByUtente(u.get(), pageable);
+                }
+            }
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+        return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+
+
+
+}

@@ -44,11 +44,6 @@ public class CouponController {
         }
     }
 
-    @GetMapping("/all-valid")
-    public ResponseEntity<List<CouponDto>> getAllValid(){
-        return couponService.getAllValid();
-    }
-
     @GetMapping("/paged-coupons")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     public ResponseEntity<Page<CouponDto>> getPagedCoupons(

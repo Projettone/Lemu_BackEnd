@@ -2,11 +2,15 @@ package it.unical.ea.lemubackend.lemu_backend.data.service;
 
 import it.unical.ea.lemubackend.lemu_backend.data.dao.RecensioneDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Recensione;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.RecensioneDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -50,4 +54,12 @@ public class RecensioneServiceImpl implements RecensioneService{
                 .map(recensione -> modelMapper.map(recensione, RecensioneDto.class))
                 .toList();
     }
+
+    @Override
+    public ResponseEntity<Page<RecensioneDto>> findAllByUtente(Utente utente, Pageable pageable) {
+        Page<Recensione> pagedRecensioni = recensioneDao.findAllByAutore(utente, pageable);
+        Page<RecensioneDto> pagedRecensioniDto = pagedRecensioni.map(recensione -> modelMapper.map(recensione, RecensioneDto.class));
+        return ResponseEntity.ok(pagedRecensioniDto);
+    }
+
 }

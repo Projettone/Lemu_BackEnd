@@ -73,15 +73,6 @@ public class CouponServiceImpl implements CouponService{
     }
 
     @Override
-    public ResponseEntity<List<CouponDto>> getAllValid() {
-        List<Coupon> coupons = couponDao.getAllByValido(true);
-        List<CouponDto> couponDto = coupons.stream()
-                .map(coupon -> modelMapper.map(coupon, CouponDto.class))
-                .collect(Collectors.toList());
-        return ResponseEntity.ok(couponDto);
-    }
-
-    @Override
     public ResponseEntity<Page<CouponDto>> getPagedCoupons(Pageable pageable) {
         Page<Coupon> pagedCoupons = couponDao.findAll(pageable);
         Page<CouponDto> pagedCouponDtos = pagedCoupons.map(coupon -> modelMapper.map(coupon, CouponDto.class));

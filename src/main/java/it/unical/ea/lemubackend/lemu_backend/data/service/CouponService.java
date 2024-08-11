@@ -15,8 +15,6 @@ public interface CouponService {
 
     ResponseEntity<?> riscattaCoupon(String token, String couponCode) throws ParseException, JOSEException;
 
-    ResponseEntity<List<CouponDto>> getAllValid();
-
     ResponseEntity<Page<CouponDto>> getPagedCoupons(Pageable pageable);
 
 
