@@ -29,12 +29,18 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Base64;
 
 
 @Service
@@ -71,6 +77,17 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
         utente.setCredenziali(c);
         utente.setIsAdmin(false);
         utente.setSaldo(0);
+        utente.setBannato(false);
+
+        Path path = Paths.get("src/main/resources/static/placeholder.png");
+        String img;
+        try{
+            byte[] b = Files.readAllBytes(path);
+            img = Base64.getEncoder().encodeToString(b);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        utente.setImmagineProfilo("data:image/png;base64,"+img);
 
         utenteDao.save(utente);
 
@@ -113,17 +130,10 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
             String familyName = (String) payload.get("family_name");
             String givenName = (String) payload.get("given_name");
 
-            System.out.println("User ID: " + userId);
-            System.out.println("Email: " + email);
-            System.out.println("Email Verified: " + emailVerified);
-            System.out.println("Name: " + name);
-            System.out.println("Picture URL: " + pictureUrl);
-            System.out.println("Locale: " + locale);
-            System.out.println("Family Name: " + familyName);
-            System.out.println("Given Name: " + givenName);
-
-
             Optional<Utente> existingUser = utenteDao.findByCredenzialiEmail(email);
+            if (existingUser.isPresent() && existingUser.get().getBannato()){
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
             if (existingUser.isEmpty()) {
                 Utente utente = new Utente();
                 utente.setNome(givenName);
@@ -131,6 +141,8 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
                 Credenziali c = new Credenziali(email, "");
                 utente.setCredenziali(c);
                 utente.setIsAdmin(false);
+                utente.setImmagineProfilo(pictureUrl);
+                utente.setBannato(false);
 
                 utenteDao.save(utente);
             }
@@ -223,8 +235,23 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
         }
     }
 
+    @Override
+    public Boolean checkBan(String email) {
+        Optional<Utente> utenteOptional = utenteDao.findByCredenzialiEmail(email);
+        if (utenteOptional.isPresent()) {
+            return utenteOptional.get().getBannato();
+        } else {
+            return false;
+        }
+    }
 
-
+    @Override
+    public List<UtenteDto> searchUsers(String keyword) {
+        List<Utente> users = utenteDao.findByNomeContainingIgnoreCaseOrCognomeContainingIgnoreCaseOrCredenzialiEmailContainingIgnoreCase(keyword, keyword, keyword);
+        return users.stream()
+                .map(user -> modelMapper.map(user, UtenteDto.class))
+                .toList();
+    }
 
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

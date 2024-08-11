@@ -40,9 +40,6 @@ public class Utente {
     @Column(name = "saldo")
     private double saldo;
 
-
-    // Lob: Large OBject, specifica che la colonna salva dati di grandi dimensioni, in questo caso ArrayList<String> per le immagini.
-    @Lob
     @Column(name = "immagineProfilo")
     private String immagineProfilo;
 

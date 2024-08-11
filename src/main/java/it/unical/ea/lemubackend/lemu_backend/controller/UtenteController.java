@@ -15,6 +15,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.Map;
 
 @RequiredArgsConstructor
@@ -31,6 +33,9 @@ public class UtenteController {
     public ApiResponse<String> googleAuthentication(@RequestParam("idToken") String idTokenString) {
         try {
             ResponseEntity<?> response = utenteService.googleAuthentication(idTokenString);
+            if (response.getStatusCode().isSameCodeAs(HttpStatus.FORBIDDEN)){
+                return new ApiResponse<>(false, HttpStatus.FORBIDDEN.toString(), "Banned user account");
+            }
             String token = TokenStore.getInstance().extractToken(response);
             return new ApiResponse<>(true, response.getStatusCode().toString(), token);
         } catch (Exception e) {
@@ -42,6 +47,9 @@ public class UtenteController {
 
     @PostMapping(path = "/authenticate")
     public ApiResponse<String> authenticate(@RequestParam("email") String email, @RequestParam("password") String password) throws JOSEException {
+        if (utenteService.checkBan(email)) {
+            return new ApiResponse<>(false, HttpStatus.FORBIDDEN.toString(), "Banned user account");
+        }
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
         String token = TokenStore.getInstance().createToken(Map.of("email", email));
         return new ApiResponse<>(true, HttpStatus.OK.toString(), token);
@@ -51,9 +59,13 @@ public class UtenteController {
     @PostMapping("/register")
     public ApiResponse<String> registerUser(@RequestBody UtenteRegistrazioneDto utenteRegistrazioneDto) {
         try {
-            ResponseEntity<?> response = utenteService.registerUser(utenteRegistrazioneDto);
-            String token = TokenStore.getInstance().extractToken(response);
-            return new ApiResponse<>(true, response.getStatusCode().toString(), token);
+            if(!utenteService.checkBan(utenteRegistrazioneDto.getCredenzialiEmail())){
+                ResponseEntity<?> response = utenteService.registerUser(utenteRegistrazioneDto);
+                String token = TokenStore.getInstance().extractToken(response);
+                return new ApiResponse<>(true, response.getStatusCode().toString(), token);
+            }else{
+                return new ApiResponse<>(false, HttpStatus.FORBIDDEN.toString(), "Banned user account");
+            }
         } catch (Exception e) {
             return new ApiResponse<>(false, HttpStatus.BAD_REQUEST.toString(), "Error: " + e.getMessage());
         }
@@ -155,5 +167,16 @@ public class UtenteController {
             return new ResponseEntity<>(false, HttpStatus.BAD_REQUEST);
         }
     }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<UtenteDto>> searchUsers(@RequestParam("keyword") String keyword) {
+        try {
+            List<UtenteDto> user = utenteService.searchUsers(keyword);
+            return new ResponseEntity<>(user, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
 
 }

@@ -10,6 +10,7 @@ import org.springframework.http.ResponseEntity;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
+import java.util.List;
 
 public interface UtenteService {
 
@@ -33,5 +34,7 @@ public interface UtenteService {
     Boolean unbanUser(String email);
     Boolean makeAdmin(String email);
     Boolean revokeAdmin(String email);
+    Boolean checkBan(String email);
+    List<UtenteDto> searchUsers(String keyword);
 
 }

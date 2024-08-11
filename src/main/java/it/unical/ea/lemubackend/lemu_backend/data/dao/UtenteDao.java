@@ -4,6 +4,8 @@ import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+
+import java.util.List;
 import java.util.Optional;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -39,6 +41,8 @@ public interface UtenteDao extends JpaRepository<Utente, Long>, JpaSpecification
     @Modifying
     @Query("UPDATE Utente u SET u.saldo = u.saldo + :amount WHERE u.credenziali.email = :email")
     void updateBalanceByEmail(String email, Double amount);
+
+    List<Utente> findByNomeContainingIgnoreCaseOrCognomeContainingIgnoreCaseOrCredenzialiEmailContainingIgnoreCase(String name, String surname, String email);
 
 
 }
