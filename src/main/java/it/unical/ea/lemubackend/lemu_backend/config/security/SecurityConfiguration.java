@@ -34,6 +34,7 @@ public class SecurityConfiguration {
             "/utente-api/register",
             "/utente-api/authenticate",
             "/utente-api/google_login",
+            "/utente-api/facebook_login",
             "utente-api/search",
             // Recensioni
             "/recensione-api/getByIdProdotto/**",

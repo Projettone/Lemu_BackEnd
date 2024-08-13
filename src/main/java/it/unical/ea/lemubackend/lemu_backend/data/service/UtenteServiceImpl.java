@@ -15,12 +15,11 @@ import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.UtenteRegistrazioneDto;
 import jakarta.persistence.EntityNotFoundException;
+import org.json.JSONObject;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,6 +27,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -154,6 +155,53 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed authentication");
     }
+
+    public ResponseEntity<?> facebookAuthentication(String accessToken) throws JOSEException {
+        String url = "https://graph.facebook.com/me?fields=id,email,first_name,last_name,picture&access_token=" + accessToken;
+
+        RestTemplate restTemplate = new RestTemplate();
+        HttpHeaders headers = new HttpHeaders();
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
+
+        if (response.getStatusCode().is2xxSuccessful()) {
+            JSONObject userData = new JSONObject(response.getBody());
+
+            String email = userData.optString("email");
+            String firstName = userData.optString("first_name");
+            String lastName = userData.optString("last_name");
+            String pictureUrl = userData.optJSONObject("picture").optJSONObject("data").optString("url");
+
+            Optional<Utente> existingUser = utenteDao.findByCredenzialiEmail(email);
+            if (existingUser.isPresent() && existingUser.get().getBannato()) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
+            }
+
+            if (existingUser.isEmpty()) {
+                Utente utente = new Utente();
+                utente.setNome(firstName);
+                utente.setCognome(lastName);
+                Credenziali credenziali = new Credenziali(email, "");
+                utente.setCredenziali(credenziali);
+                utente.setIsAdmin(false);
+                utente.setImmagineProfilo(pictureUrl);
+                utente.setBannato(false);
+
+                utenteDao.save(utente);
+            }
+
+            String jwtToken = tokenStore.createToken(Map.of("email", email));
+            HttpHeaders jwtHeaders = new HttpHeaders();
+            jwtHeaders.add("Authorization", "Bearer " + jwtToken);
+
+            return ResponseEntity.ok().headers(jwtHeaders).build();
+        }
+
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Failed authentication");
+    }
+
+
 
     @Override
     public UtenteDto getUserByToken(String token) throws ParseException, JOSEException {

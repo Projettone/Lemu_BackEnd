@@ -43,6 +43,21 @@ public class UtenteController {
         }
     }
 
+    @PostMapping("/facebook_login")
+    public ApiResponse<String> facebookAuthentication(@RequestParam("accessToken") String accessToken) {
+        try {
+            ResponseEntity<?> response = utenteService.facebookAuthentication(accessToken);
+            if (response.getStatusCode().isSameCodeAs(HttpStatus.FORBIDDEN)) {
+                return new ApiResponse<>(false, HttpStatus.FORBIDDEN.toString(), "Banned user account");
+            }
+            String token = TokenStore.getInstance().extractToken(response);
+            return new ApiResponse<>(true, response.getStatusCode().toString(), token);
+        } catch (Exception e) {
+            return new ApiResponse<>(false, HttpStatus.BAD_REQUEST.toString(), "Error: " + e.getMessage());
+        }
+    }
+
+
 
 
     @PostMapping(path = "/authenticate")

@@ -24,6 +24,7 @@ public interface UtenteService {
 
     ResponseEntity<?> googleAuthentication(String idToken) throws JOSEException, GeneralSecurityException, IOException;
 
+    ResponseEntity<?> facebookAuthentication(String idToken) throws JOSEException;
     UtenteDto getUserByToken(String token) throws ParseException, JOSEException;
 
     void updatePassword(String token, String newPassword) throws ParseException, JOSEException;

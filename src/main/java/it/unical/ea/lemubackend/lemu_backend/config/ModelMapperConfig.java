@@ -11,21 +11,19 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ModelMapperConfig {
 
-    //gestirà il ciclo di vita e fornirà questo bean ad altre parti dell'applicazione che ne hanno bisogno
-    @Bean
-    public ModelMapper getModelMapper() {
-        ModelMapper modelMapper = new ModelMapper();
-        //abilita il matching dei campi in base ai nomi dei campi durante il processo di mappatura.
-        modelMapper.getConfiguration().setFieldMatchingEnabled(true).setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE); //consente a ModelMapper di accedere ai campi privati per la mappatura
-        return modelMapper;
-    }
-
     @Bean
     public ModelMapper modelMapper() {
         ModelMapper modelMapper = new ModelMapper();
+        // Configura il ModelMapper per abilitare il matching dei campi basato sui nomi
+        modelMapper.getConfiguration()
+                .setFieldMatchingEnabled(true)
+                .setFieldAccessLevel(org.modelmapper.config.Configuration.AccessLevel.PRIVATE);
+
+        // Definisce la mappatura tra Utente e UtenteDto per l'email
         modelMapper.typeMap(Utente.class, UtenteDto.class).addMappings(mapper -> {
             mapper.map(src -> src.getCredenziali().getEmail(), UtenteDto::setEmail);
         });
+
         return modelMapper;
     }
 
