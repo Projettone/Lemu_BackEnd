@@ -32,7 +32,7 @@ public class PaymentServiceImpl implements PaymentService{
             Utente u = utenteOptional.get();
             if (u.getSaldo() >= amount) {
                 utenteDao.updateBalanceByEmail(u.getCredenziali().getEmail(), -amount);
-                return ResponseEntity.ok("Pagamento effettuato con successo");
+                return ResponseEntity.ok("Pagamento_effettuato_con_successo");
             } else {
                 return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Saldo insufficiente.");
             }

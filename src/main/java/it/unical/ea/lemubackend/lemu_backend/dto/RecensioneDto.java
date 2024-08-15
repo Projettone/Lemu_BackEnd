@@ -10,6 +10,7 @@ import jakarta.validation.constraints.NotNull;
 @ToString
 public class RecensioneDto {
 
+    private Long id;
     @NotNull
     private Float rating;
 

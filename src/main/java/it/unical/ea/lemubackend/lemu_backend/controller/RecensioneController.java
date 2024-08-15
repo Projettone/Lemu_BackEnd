@@ -55,6 +55,25 @@ public class RecensioneController
     }
 
 
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteReview(HttpServletRequest request, @PathVariable Long id) {
+        try {
+            String authHeader = request.getHeader("Authorization");
+            if (authHeader != null && authHeader.startsWith("Bearer ")) {
+                String token = TokenStore.getInstance().getToken(request);
+                boolean deleted = recensioneService.deleteReview(token, id);
+                if (deleted) {
+                    return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+                } else {
+                    return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+                }
+            }
+            return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
 
 
 }

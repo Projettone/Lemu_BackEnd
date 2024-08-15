@@ -1,5 +1,6 @@
 package it.unical.ea.lemubackend.lemu_backend.controller;
 
+import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.service.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
+    private final TokenStore tokenStore;
 
 
     @PostMapping("/process-payment/{amount}")
@@ -21,7 +23,7 @@ public class PaymentController {
         try {
             String authHeader = request.getHeader("Authorization");
             if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
+                String token = tokenStore.getToken(request);
                 return paymentService.processPayment(token, amount);
             } else {
                 return new ResponseEntity<>("Authorization header missing or invalid", HttpStatus.UNAUTHORIZED);
