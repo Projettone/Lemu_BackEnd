@@ -5,6 +5,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.jackson2.JacksonFactory;
 import com.nimbusds.jose.JOSEException;
+import it.unical.ea.lemubackend.lemu_backend.Message;
 import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.CouponDao;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
@@ -20,6 +21,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -28,20 +30,20 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.GeneralSecurityException;
+import java.security.SecureRandom;
 import java.text.ParseException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.io.IOException;
-import java.sql.SQLException;
 import java.util.Base64;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 
 @Service
@@ -50,9 +52,14 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
     private final ModelMapper modelMapper;
     private final TokenStore tokenStore;
     private final PasswordEncoder passwordEncoder;
+    private final Message m = new Message();
+
 
     @Value("${spring.security.oauth2.client.registration.google.client-id}")
     private String clientId;
+
+    @Autowired
+    private JavaMailSender mailSender;
 
     @Autowired
     public UtenteServiceImpl(UtenteDao utenteDao, ModelMapper modelMapper, TokenStore tokenStore, PasswordEncoder passwordEncoder) {
@@ -91,6 +98,8 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
         utente.setImmagineProfilo("data:image/png;base64,"+img);
 
         utenteDao.save(utente);
+
+        sendregistrationConfirmationEmail(utenteRegistrazioneDto.getNome(), utenteRegistrazioneDto.getCredenzialiEmail());
 
         String token = tokenStore.createToken(Map.of("email", c.getEmail()));
         HttpHeaders headers = new HttpHeaders();
@@ -300,6 +309,41 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
                 .map(user -> modelMapper.map(user, UtenteDto.class))
                 .toList();
     }
+
+    @Override
+    public void sendPasswordRecoveryEmail(String email) {
+        String subject = "Recupero Password Lemu";
+        Optional<Utente> utente = utenteDao.findByCredenzialiEmail(email);
+        if (utente.isPresent()){
+            SecureRandom secureRandom = new SecureRandom();
+            byte[] randomBytes = new byte[12];
+            secureRandom.nextBytes(randomBytes);
+            String password = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+            utente.get().getCredenziali().setPassword(passwordEncoder.encode(password));
+            utenteDao.save(utente.get());
+
+            Utente u = utente.get();
+            String message = m.recovery_password(u.getNome(), password);
+            SimpleMailMessage mailMessage = new SimpleMailMessage();
+            mailMessage.setTo(email);
+            mailMessage.setSubject(subject);
+            mailMessage.setText(message);
+
+            mailSender.send(mailMessage);
+        }
+    }
+
+    public void sendregistrationConfirmationEmail(String name, String email) {
+        String subject = "Conferma registrazione Lemu";
+        String message = m.registrationConfirmation(name);
+        SimpleMailMessage mailMessage = new SimpleMailMessage();
+        mailMessage.setTo(email);
+        mailMessage.setSubject(subject);
+        mailMessage.setText(message);
+
+        mailSender.send(mailMessage);
+    }
+
 
 
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {

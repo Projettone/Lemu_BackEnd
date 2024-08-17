@@ -60,7 +60,7 @@ public class UtenteController {
 
 
 
-    @PostMapping(path = "/authenticate")
+    @PostMapping("/authenticate")
     public ApiResponse<String> authenticate(@RequestParam("email") String email, @RequestParam("password") String password) throws JOSEException {
         if (utenteService.checkBan(email)) {
             return new ApiResponse<>(false, HttpStatus.FORBIDDEN.toString(), "Banned user account");
@@ -190,6 +190,16 @@ public class UtenteController {
             return new ResponseEntity<>(user, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @PostMapping("/password-recovery")
+    public ResponseEntity<String> sendPasswordResetEmail(@RequestParam("email") String email) {
+        try {
+            utenteService.sendPasswordRecoveryEmail(email);
+            return new ResponseEntity<>("Email inviata correttamente all'indirizzo", HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>("Errore durante l'invio dell'email", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 

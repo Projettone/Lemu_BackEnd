@@ -38,4 +38,5 @@ public interface UtenteService {
     Boolean checkBan(String email);
     List<UtenteDto> searchUsers(String keyword);
 
+    void sendPasswordRecoveryEmail(String email);
 }
