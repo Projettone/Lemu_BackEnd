@@ -14,8 +14,17 @@ public class RecensioneDto {
     @NotNull
     private Float rating;
 
+    @NotNull
     private String commento;
 
     @NotNull
     private String nomeProdotto;
+
+    @NotNull
+    private Long prodottoId;
+
+    @NotNull
+    private String credenzialiEmailAutore;
+
+    private String immagineProfiloAutore;
 }

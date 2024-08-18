@@ -2,7 +2,10 @@ package it.unical.ea.lemubackend.lemu_backend.data.service;
 
 import com.nimbusds.jose.JOSEException;
 import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
+import it.unical.ea.lemubackend.lemu_backend.data.dao.ProdottoDao;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.RecensioneDao;
+import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.Prodotto;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Recensione;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.RecensioneDto;
@@ -13,6 +16,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +32,24 @@ public class RecensioneServiceImpl implements RecensioneService{
 
     private final TokenStore tokenStore;
     private final RecensioneDao recensioneDao;
+    private final UtenteDao utenteDao;
+    private final ProdottoDao prodottoDao;
     private final ModelMapper modelMapper;
 
 
     @Override
-    public void save(Recensione recensione) {
-
+    public ResponseEntity<?> save(RecensioneDto recensioneDto) {
+        try{
+            Recensione r = modelMapper.map(recensioneDto, Recensione.class);
+            Optional<Utente> u = utenteDao.findByCredenzialiEmail(r.getAutore().getCredenziali().getEmail());
+            u.ifPresent(r::setAutore);
+            Optional<Prodotto> p = prodottoDao.findById(r.getProdotto().getId());
+            p.ifPresent(r::setProdotto);
+            recensioneDao.save(r);
+            return new ResponseEntity<>(HttpStatus.OK);
+        } catch (Exception e){
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
 

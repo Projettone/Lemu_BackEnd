@@ -40,7 +40,7 @@ public class Utente {
     @Column(name = "saldo")
     private double saldo;
 
-    @Column(name = "immagineProfilo")
+    @Column(name = "immagineProfilo", columnDefinition = "TEXT")
     private String immagineProfilo;
 
     //@Embedded: Indica che indirizzo è un tipo di oggetto incorporato. Ciò significa che la sua struttura interna viene mappata direttamente alle colonne della tabella del database, anziché utilizzare una relazione separata

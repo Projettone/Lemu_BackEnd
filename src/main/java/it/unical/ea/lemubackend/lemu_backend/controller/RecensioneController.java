@@ -25,6 +25,14 @@ public class RecensioneController
 
     private final RecensioneService recensioneService;
 
+
+    @PostMapping("/add")
+    public ResponseEntity<?> addRecensione(@RequestBody RecensioneDto recensioneDto) {
+        return recensioneService.save(recensioneDto);
+    }
+
+
+
     @GetMapping("/getByIdProdotto/{id}")
     public ResponseEntity<List<RecensioneDto>> getRecensioniByProdottoId(@PathVariable("id") Long prodottoId) {
         try {

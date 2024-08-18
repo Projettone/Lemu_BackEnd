@@ -4,11 +4,13 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 @Entity
 @Data
 @Table(name = "recensione")
 @NoArgsConstructor
+@ToString(exclude = "prodotto")
 public class Recensione {
 
     @Id

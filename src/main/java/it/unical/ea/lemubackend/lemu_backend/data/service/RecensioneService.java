@@ -14,7 +14,7 @@ import java.util.List;
 
 public interface RecensioneService {
 
-    void save(Recensione recensione);
+    ResponseEntity<?> save(RecensioneDto recensioneDto);
 
     Collection<RecensioneDto> findAll();
 

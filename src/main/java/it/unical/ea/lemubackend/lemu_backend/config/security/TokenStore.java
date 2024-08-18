@@ -109,5 +109,4 @@ public class TokenStore {
         return authorizationHeader.substring("Bearer ".length());
     }
 
-    public void isAdmin(String email){}
 }
