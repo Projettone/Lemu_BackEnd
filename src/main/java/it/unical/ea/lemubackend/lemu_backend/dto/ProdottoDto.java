@@ -1,8 +1,5 @@
 package it.unical.ea.lemubackend.lemu_backend.dto;
 
-import it.unical.ea.lemubackend.lemu_backend.data.entities.Recensione;
-import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
-import it.unical.ea.lemubackend.lemu_backend.data.service.ProdottoService;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
