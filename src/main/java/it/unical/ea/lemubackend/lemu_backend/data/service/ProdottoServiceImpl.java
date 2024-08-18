@@ -1,6 +1,5 @@
 package it.unical.ea.lemubackend.lemu_backend.data.service;
 
-import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.ProdottoDao;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Prodotto;
@@ -11,10 +10,9 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
-
-import java.util.Base64;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.concurrent.CompletableFuture;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,11 +65,44 @@ public class ProdottoServiceImpl implements  ProdottoService {
 
 
     @Override
-    public Collection<ProdottoDto> findAll() {
-        return prodottoDao.findAll().stream()
-                .map(u -> modelMapper.map(u, ProdottoDto.class))
+    public Collection<ProdottoDto> findAll(int start, int end) {
+        List<Prodotto> prodotti = prodottoDao.findAll();
+
+        // Log per vedere quanti prodotti sono stati trovati
+        System.out.println("Numero totale di prodotti: " + prodotti.size());
+
+        // Log per vedere quali prodotti sono stati trovati
+        prodotti.forEach(prodotto -> System.out.println("Prodotto trovato: ID=" + prodotto.getId() + ", Nome=" + prodotto.getNome()));
+
+        // Verifica che gli indici start ed end siano validi
+        if (start < 1 || end < start) {
+            throw new IllegalArgumentException("Indici non validi: start deve essere >= 1 e end deve essere >= start");
+        }
+
+        // Se la dimensione della lista è inferiore all'indice di inizio, restituisci una lista vuota
+        if (prodotti.size() < start) {
+            return new ArrayList<>();
+        }
+
+        List<ProdottoDto> result = prodotti.stream()
+                .skip(start - 1) // Salta i primi 'start - 1' elementi
+                .limit(end - start + 1) // Limita il numero di risultati a 'end - start + 1'
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
+
+        // Log per vedere quanti prodotti sono stati selezionati dopo skip e limit
+        System.out.println("Numero di prodotti dopo skip e limit: " + result.size());
+
+        // Log per vedere quali prodotti vengono restituiti
+        result.forEach(prodottoDto -> System.out.println("Prodotto restituito: ID=" + prodottoDto.getId() + ", Nome=" + prodottoDto.getNome()));
+
+        return result;
     }
+
+    private ProdottoDto convertToDto(Prodotto prodotto) {
+        return modelMapper.map(prodotto, ProdottoDto.class);
+    }
+
 
     @Override
     public ProdottoDto getById(Long id) {
@@ -88,6 +119,27 @@ public class ProdottoServiceImpl implements  ProdottoService {
         Utente utente =  modelMapper.map(utenteDto, Utente.class);
         p.setUtente(utente);
         prodottoDao.save(p);
+    }
+
+
+
+    public List<ProdottoDto> searchProdotti(String keyword) {
+        // Recupera la lista di prodotti dalla ricerca
+        List<Prodotto> prodotti = prodottoDao.searchByKeyword(keyword);
+
+        // Mappa ciascun prodotto a ProdottoDto
+        return prodotti.stream()
+                .map(prodotto -> modelMapper.map(prodotto, ProdottoDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProdottoDto> getProdottiByCategoria(String categoria) {
+        List<Prodotto> prodotti = prodottoDao.findByCategoria(categoria);
+
+        return prodotti.stream()
+                .map(prodotto -> modelMapper.map(prodotto, ProdottoDto.class))
+                .collect(Collectors.toList());
     }
 
 
