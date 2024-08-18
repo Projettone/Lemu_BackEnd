@@ -1,22 +1,21 @@
 package it.unical.ea.lemubackend.lemu_backend.data.service;
 
-import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.OrdineDao;
+import it.unical.ea.lemubackend.lemu_backend.data.dao.OrdineProdottoDao;
 import it.unical.ea.lemubackend.lemu_backend.data.dao.UtenteDao;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Ordine;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.OrdineProdotto;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.dto.OrdineDto;
+import it.unical.ea.lemubackend.lemu_backend.dto.OrdineProdottoDto;
+import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.Base64;
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,23 +23,30 @@ import java.util.stream.Collectors;
 public class OrdineServiceImpl implements OrdineService {
 
     private final OrdineDao ordineDao;
+    private final OrdineProdottoDao ordineProdottoDao;
     private final ModelMapper modelMapper;
     private final UtenteDao utenteDao;
+    private final UtenteService utenteService;
 
+
+    /*
     @Override
     public OrdineDto save(OrdineDto ordineDto, String encodedJwt) {
         try {
-
             // Decodifica del JWT base64 per ottenere il token JWT effettivo
             String jwt = new String(Base64.getDecoder().decode(encodedJwt));
 
-            Optional<Utente> utente = TokenStore.getInstance().getUser(jwt);
+            // Ottiene l'username (o email) dall'oggetto JWT usando il metodo TokenStore.getUser
+            String username = TokenStore.getInstance().getUser(jwt);
+
+            // Trova l'utente in base all'email
+            Utente utente = utenteDao.findByCredenzialiEmail(username).orElse(null);
 
             // Se l'utente esiste, salva l'ordine
             if (utente != null) {
                 // Mappa OrdineDto a Ordine
                 Ordine ordine = modelMapper.map(ordineDto, Ordine.class);
-                ordine.setUtente(utente.get()); // Associa l'utente all'ordine
+                ordine.setUtente(utente); // Associa l'utente all'ordine
 
                 // Salva l'ordine nel database
                 ordine = ordineDao.save(ordine);
@@ -58,6 +64,19 @@ public class OrdineServiceImpl implements OrdineService {
         }
     }
 
+     */
+
+    @Override
+    public void save(OrdineDto ordineDto) {
+        Ordine o = modelMapper.map(ordineDto, Ordine.class);
+        UtenteDto utenteDto = utenteService.getById(ordineDto.getIdutente());
+        Utente utente =  modelMapper.map(utenteDto, Utente.class);
+        o.setUtente(utente);
+        ordineDao.save(o);
+    }
+
+
+
 
     @Override
     public OrdineDto getById(Long id) {
@@ -68,12 +87,55 @@ public class OrdineServiceImpl implements OrdineService {
 
 
     public Collection<OrdineDto> findOrderbyUser(Long id) {
-        List<Ordine> ordini = ordineDao.findOrdineByUtente_Id(id);
+        List<Ordine> ordini = ordineDao.findOrdiniByUtenteId(id);
         if (ordini.isEmpty()) {
             throw new EntityNotFoundException(String.format("Non ci sono ordini per l'utente con id: [%s]", id));
         }
         return ordini.stream()
                 .map(ordine -> modelMapper.map(ordine, OrdineDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<OrdineDto> findAllOrders() {
+        List<Ordine> ordini = ordineDao.findAll();
+        return ordini.stream()
+                .map(ordine -> modelMapper.map(ordine, OrdineDto.class))
+                .collect(Collectors.toList());
+    }
+/*
+    public Collection<OrdineDto> findOrderByUserAndDate(Long userId, String dateFilter) {
+        List<Ordine> ordini = ordineDao.findOrdiniByUtenteId(userId);
+        if (ordini.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Non ci sono ordini per l'utente con id: [%s]", userId));
+        }
+
+        // Filtra gli ordini in base alla stringa dateFilter
+        List<Ordine> filteredOrders = ordini.stream()
+                .filter(ordine -> ordine.getDataAcquisto().toString().contains(dateFilter))
+                .collect(Collectors.toList());
+
+        if (filteredOrders.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Nessun ordine trovato per l'utente con id [%s] e data contenente [%s]", userId, dateFilter));
+        }
+
+        return filteredOrders.stream()
+                .map(ordine -> modelMapper.map(ordine, OrdineDto.class))
+                .collect(Collectors.toList());
+    }
+
+ */
+
+    @Override
+    public Collection<OrdineProdottoDto> getDettagliOrdineByIdOrdine(Long id) {
+        List<OrdineProdotto> ordineProdotto = ordineProdottoDao.findDettagliOrdineByOrdineId(id);
+
+        // Converti gli oggetti OrdineProdotto in OrdineProdottoDto
+        Collection<OrdineProdottoDto> ordineProdottoDtos = ordineProdotto.stream()
+                .map(ordine -> modelMapper.map(ordine, OrdineProdottoDto.class))
+                .collect(Collectors.toList());
+
+
+        return ordineProdottoDtos;
     }
 }
