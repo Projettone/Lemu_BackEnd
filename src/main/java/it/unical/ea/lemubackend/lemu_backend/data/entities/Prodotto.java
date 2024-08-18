@@ -1,9 +1,9 @@
 package it.unical.ea.lemubackend.lemu_backend.data.entities;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Entity
@@ -31,7 +31,7 @@ public class Prodotto {
     @Column(name = "categoria")
     private String categoria;
 
-    @OneToMany(mappedBy = "prodotto", fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "prodotto",cascade = CascadeType.REMOVE, fetch = FetchType.EAGER)
     private List<Recensione> recensione;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -39,9 +39,8 @@ public class Prodotto {
     private Utente utente;
 
     @Column(name = "disponibilita")
-    private Boolean disponibilita;
+    private int disponibilita;
 
-    @Column(columnDefinition = "TEXT")
+    @Column(columnDefinition = "TEXT") // Per gestire grandi quantità di dati in Base64
     private String immagineBase64;
-
 }
