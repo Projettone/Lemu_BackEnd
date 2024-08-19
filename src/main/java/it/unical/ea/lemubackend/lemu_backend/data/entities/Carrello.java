@@ -3,6 +3,7 @@ package it.unical.ea.lemubackend.lemu_backend.data.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 
