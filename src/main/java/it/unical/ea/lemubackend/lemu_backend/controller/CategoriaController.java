@@ -1,12 +1,14 @@
 package it.unical.ea.lemubackend.lemu_backend.controller;
 
-import it.unical.ea.lemubackend.lemu_backend.dto.CategoriaDto;
 import it.unical.ea.lemubackend.lemu_backend.data.service.CategoriaService;
+import it.unical.ea.lemubackend.lemu_backend.dto.CategoriaDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -21,11 +23,5 @@ public class CategoriaController {
         Optional<CategoriaDto> categoriaDto = categoriaService.getCategoriaById(id);
         return categoriaDto.map(ResponseEntity::ok)
                 .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/all")
-    public ResponseEntity<List<CategoriaDto>> getAllCategorie() {
-        List<CategoriaDto> categorie = categoriaService.getAllCategorie();
-        return ResponseEntity.ok(categorie);
     }
 }
