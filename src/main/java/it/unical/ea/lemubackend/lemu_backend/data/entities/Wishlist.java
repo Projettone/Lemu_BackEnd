@@ -3,6 +3,7 @@ package it.unical.ea.lemubackend.lemu_backend.data.entities;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Entity
@@ -16,7 +17,7 @@ public class Wishlist {
     @Column(name="id")
     private Long id;
 
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "utente_id")
     private Utente utente;
 

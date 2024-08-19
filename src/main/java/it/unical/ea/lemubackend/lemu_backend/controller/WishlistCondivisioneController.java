@@ -1,7 +1,8 @@
 package it.unical.ea.lemubackend.lemu_backend.controller;
 
-import it.unical.ea.lemubackend.lemu_backend.dto.WishlistCondivisioneDto;
 import it.unical.ea.lemubackend.lemu_backend.data.service.WishlistCondivisioneService;
+import it.unical.ea.lemubackend.lemu_backend.dto.WishlistCondivisioneDto;
+import it.unical.ea.lemubackend.lemu_backend.dto.WishlistDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -9,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("wishlistcondivisione-api")
+@RequestMapping("/wishlistcondivisione-api")
 public class WishlistCondivisioneController {
 
     @Autowired
@@ -39,5 +40,19 @@ public class WishlistCondivisioneController {
     @GetMapping("/all")
     public ResponseEntity<List<WishlistCondivisioneDto>> getAllWishlistCondivisioni() {
         return ResponseEntity.ok(wishlistCondivisioneService.getAllWishlistCondivisioni());
+    }
+
+    @GetMapping("/wishlist/{wishlistId}")
+    public ResponseEntity<List<WishlistCondivisioneDto>> getAllWishlistCondivisioniByWishlistId(@PathVariable Long wishlistId) {
+        List<WishlistCondivisioneDto> condivisioni = wishlistCondivisioneService.getAllWishlistCondivisioniByWishlistId(wishlistId);
+        return ResponseEntity.ok(condivisioni);
+    }
+
+    @GetMapping("/condivise")
+    public ResponseEntity<List<WishlistDto>> getWishlistsCondiviseConEmail(
+            @RequestParam Long utenteId,
+            @RequestParam String email) {
+        List<WishlistDto> wishlists = wishlistCondivisioneService.getWishlistsCondiviseConEmail(utenteId, email);
+        return ResponseEntity.ok(wishlists);
     }
 }
