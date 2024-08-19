@@ -24,6 +24,8 @@ public interface RecensioneService {
 
     ResponseEntity<Page<RecensioneDto>> findAllByUtente(Utente utente, Pageable pageable);
 
+    ResponseEntity<Page<RecensioneDto>> findAllByUtenteRicercato(Long idUtente, Pageable pageable);
+
     Boolean deleteReview(String token, Long id) throws ParseException, JOSEException;
 
 }

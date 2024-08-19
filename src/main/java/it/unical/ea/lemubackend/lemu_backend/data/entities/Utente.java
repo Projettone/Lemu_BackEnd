@@ -68,8 +68,8 @@ public class Utente {
 
     //Mapping wishlist
     @JsonManagedReference
-    @OneToOne(mappedBy = "utente", fetch = FetchType.LAZY)
-    private Wishlist wishlist;
+    @OneToMany(mappedBy = "utente", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Wishlist> wishlist;
 
     //Mapping recensioni
     @JsonManagedReference
@@ -93,7 +93,7 @@ public class Utente {
                 ", indirizzo=" + indirizzo +
                 ", credenziali=" + credenziali +
                 ", carrello=" + (carrello != null ? carrello.getId() : "null") +
-                ", wishlist=" + (wishlist != null ? wishlist.getId() : "null") +
+                ", wishlist=" + (wishlist != null ? wishlist.size() : "null") +
                 '}';
     }
 

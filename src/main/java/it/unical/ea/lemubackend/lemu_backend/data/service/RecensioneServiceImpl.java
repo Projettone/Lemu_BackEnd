@@ -85,6 +85,19 @@ public class RecensioneServiceImpl implements RecensioneService{
     }
 
     @Override
+    public ResponseEntity<Page<RecensioneDto>> findAllByUtenteRicercato(Long idUtente, Pageable pageable) {
+        Optional<Utente> utente = utenteDao.findById(idUtente);
+        if (utente.isPresent()) {
+            Page<Recensione> pagedRecensioni = recensioneDao.findAllByAutore(utente.get(), pageable);
+            Page<RecensioneDto> pagedRecensioniDto = pagedRecensioni.map(recensione -> modelMapper.map(recensione, RecensioneDto.class));
+            return ResponseEntity.ok(pagedRecensioniDto);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    @Override
     public Boolean deleteReview(String token, Long id) throws ParseException, JOSEException {
         Optional<Utente> utenteOptional = tokenStore.getUser(token);
         if (utenteOptional.isPresent()) {

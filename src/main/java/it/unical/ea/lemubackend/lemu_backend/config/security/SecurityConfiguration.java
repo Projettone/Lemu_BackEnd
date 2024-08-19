@@ -39,11 +39,13 @@ public class SecurityConfiguration {
             "utente-api/password-recovery",
             // Recensioni
             "/recensione-api/getByIdProdotto/**",
+            "/recensione-api/get-searched-reviews",
 
             "/prodottocontroller-api/add",
             "/prodottocontroller-api/all",
             "/swagger-ui/index.html",
             "/swagger-ui.html",
+            "/wishlists-api/all"
     };
 
 

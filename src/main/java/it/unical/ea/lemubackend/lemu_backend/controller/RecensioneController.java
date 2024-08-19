@@ -62,6 +62,12 @@ public class RecensioneController
         return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
+    @GetMapping("/get-searched-reviews")
+    public ResponseEntity<Page<RecensioneDto>> getRecensioniByUtenteRicercato(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size, @RequestParam("idUtente") Long idUtente) {
+        Pageable pageable = PageRequest.of(page, size);
+        return recensioneService.findAllByUtenteRicercato(idUtente, pageable);
+    }
+
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteReview(HttpServletRequest request, @PathVariable Long id) {
