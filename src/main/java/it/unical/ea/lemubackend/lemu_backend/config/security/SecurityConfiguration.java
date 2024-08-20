@@ -36,16 +36,38 @@ public class SecurityConfiguration {
             "/utente-api/google_login",
             "/utente-api/facebook_login",
             "utente-api/search",
-            "utente-api/password-recovery",
             // Recensioni
             "/recensione-api/getByIdProdotto/**",
-            "/recensione-api/get-searched-reviews",
-
+            // Prodotto
             "/prodottocontroller-api/add",
             "/prodottocontroller-api/all",
+            "/prodottocontroller-api/search",
+            "/prodottocontroller-api/get/{id}",
+            "/prodottocontroller-api/add",
+            "prodottocontroller-api/get/by-category/{categoria}",
+            //Wishlist
+            "/wishlist-api/add",
+            "/wishlist-api/update/{id}",
+            "/wishlist-api/delete/{id}",
+            "/wishlist-api/getByUtente/{utenteId}",
+            "/wishlist-api/utente/{utenteId}",
+            "wishlist-api/prodotti/add",
+            "/wishlist-api/prodotti/update/{id}",
+            "/wishlist-api/prodotti/delete/{id}",
+            "/wishlist-api/prodotti/get/{id}",
+            "/wishlist-api/prodotti/get/{wishlistid}/all",
+            "/wishlistcondivisione-api/add",
+            "/wishlistcondivisione-api/update/{id}",
+            "/wishlistcondivisione-api/delete/{id}",
+            "/wishlistcondivisione-api/get/{id}",
+            "/wishlistcondivisione-api/all",
+            "/wishlistcondivisione-api/wishlist/{wishlistId}",
+            "/wishlistcondivisione-api/condivise",
+            // Categorie
+            "/categoria-api/get/{id}",
+
             "/swagger-ui/index.html",
             "/swagger-ui.html",
-            "/wishlists-api/all"
     };
 
 

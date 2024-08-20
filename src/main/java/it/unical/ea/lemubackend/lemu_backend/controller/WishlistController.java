@@ -40,7 +40,7 @@ public class WishlistController {
         return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/getByUtente/{utenteid}")
+    @GetMapping("/getByUtente/{utenteId}")
     public ResponseEntity<WishlistDto> getWishlistByUtenteId(@PathVariable Long utenteId) {
         WishlistDto wishlistDto = wishlistService.getWishlistByUtenteId(utenteId);
         return ResponseEntity.ok(wishlistDto);
