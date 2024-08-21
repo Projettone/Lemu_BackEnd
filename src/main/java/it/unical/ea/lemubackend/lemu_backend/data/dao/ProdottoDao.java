@@ -9,8 +9,9 @@ import java.util.List;
 
 @Repository
 public interface ProdottoDao extends JpaRepository<Prodotto, Long> {
-    @Query("SELECT p FROM Prodotto p WHERE p.nome LIKE %:keyword% OR p.descrizione LIKE %:keyword% OR p.categoria LIKE %:keyword%")
+    @Query("SELECT p FROM Prodotto p WHERE LOWER(p.nome) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.descrizione) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(p.categoria) LIKE LOWER(CONCAT('%', :keyword, '%'))")
     List<Prodotto> searchByKeyword(@Param("keyword") String keyword);
+
 
 
     @Query("SELECT p FROM Prodotto p WHERE p.categoria = :categoria")
