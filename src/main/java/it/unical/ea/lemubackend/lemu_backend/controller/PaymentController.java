@@ -15,15 +15,13 @@ import org.springframework.web.bind.annotation.*;
 public class PaymentController {
 
     private final PaymentService paymentService;
-    private final TokenStore tokenStore;
 
 
     @PostMapping("/process-payment/{amount}")
     public ResponseEntity<?> processPayment(HttpServletRequest request, @PathVariable Double amount) {
+        String token = TokenStore.getInstance().getToken(request);
         try {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = tokenStore.getToken(request);
+            if (token != null && !"invalid".equals(token)){
                 return paymentService.processPayment(token, amount);
             } else {
                 return new ResponseEntity<>("Authorization header missing or invalid", HttpStatus.UNAUTHORIZED);

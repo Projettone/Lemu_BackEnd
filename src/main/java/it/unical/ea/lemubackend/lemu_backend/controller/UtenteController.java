@@ -89,10 +89,9 @@ public class UtenteController {
     @GetMapping("/user")
     public ApiResponse<UtenteDto> getUserData(HttpServletRequest request) {
         UtenteDto user = null;
+        String token = TokenStore.getInstance().getToken(request);
         try {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = TokenStore.getInstance().getToken(request);
+            if (token != null && !"invalid".equals(token)){
                 user = utenteService.getUserByToken(token);
                 return new ApiResponse<>(true, HttpStatus.OK.toString(), user);
             } else {
@@ -107,10 +106,9 @@ public class UtenteController {
 
     @PostMapping("/update-password")
     public ApiResponse<String> updatePassword(@RequestParam("newPassword") String newPassword, HttpServletRequest request) {
+        String token = TokenStore.getInstance().getToken(request);
         try {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = TokenStore.getInstance().getToken(request);
+            if (token != null && !"invalid".equals(token)){
                 utenteService.updatePassword(token, newPassword);
                 return new ApiResponse<>(true, HttpStatus.OK.toString(), "Password updated successfully");
             } else {
@@ -123,10 +121,9 @@ public class UtenteController {
 
     @PostMapping("/update-shipping-address")
     public ApiResponse<String> updateShippingAddress(@RequestBody Indirizzo address, HttpServletRequest request) {
+        String token = TokenStore.getInstance().getToken(request);
         try {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = TokenStore.getInstance().getToken(request);
+            if (token != null && !"invalid".equals(token)){
                 utenteService.updateShippingAddress(token, address);
                 return new ApiResponse<>(true, HttpStatus.OK.toString(), "Email updated successfully");
             } else {

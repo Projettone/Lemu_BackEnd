@@ -38,6 +38,7 @@ public class SecurityConfiguration {
             "utente-api/search",
             // Recensioni
             "/recensione-api/getByIdProdotto/**",
+            "/recensione-api/get-searched-reviews/**",
             // Prodotto
             "/prodottocontroller-api/add",
             "/prodottocontroller-api/all",
@@ -63,6 +64,8 @@ public class SecurityConfiguration {
             "/wishlistcondivisione-api/all",
             "/wishlistcondivisione-api/wishlist/{wishlistId}",
             "/wishlistcondivisione-api/condivise",
+            "/wishlist-api/public/**",
+
             // Categorie
             "/categoria-api/get/{id}",
 

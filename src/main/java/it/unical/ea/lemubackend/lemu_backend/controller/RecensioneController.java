@@ -71,10 +71,9 @@ public class RecensioneController
 
     @DeleteMapping("/delete/{id}")
     public ResponseEntity<Void> deleteReview(HttpServletRequest request, @PathVariable Long id) {
+        String token = TokenStore.getInstance().getToken(request);
         try {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = TokenStore.getInstance().getToken(request);
+            if (token != null && !"invalid".equals(token)){
                 boolean deleted = recensioneService.deleteReview(token, id);
                 if (deleted) {
                     return new ResponseEntity<>(HttpStatus.NO_CONTENT);

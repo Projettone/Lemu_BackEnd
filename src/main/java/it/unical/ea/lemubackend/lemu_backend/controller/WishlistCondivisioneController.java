@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/wishlistcondivisione-api")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class WishlistCondivisioneController {
 
     @Autowired

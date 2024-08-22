@@ -1,5 +1,7 @@
 package it.unical.ea.lemubackend.lemu_backend.data.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -32,6 +34,11 @@ public class Wishlist {
 
     @OneToMany(mappedBy = "wishlist", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<WishlistCondivisione> wishlistCondivisione;
+
+    @Override
+    public String toString() {
+        return "Wishlist{id=" + id + ", prodottiSize=" + (wishlistProdotti != null ? wishlistProdotti.size() : 0) + "}";
+    }
 
 }
 

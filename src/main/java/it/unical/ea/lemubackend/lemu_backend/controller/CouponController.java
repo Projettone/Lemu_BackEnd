@@ -1,5 +1,6 @@
 package it.unical.ea.lemubackend.lemu_backend.controller;
 
+import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.service.CouponService;
 import it.unical.ea.lemubackend.lemu_backend.dto.CouponDto;
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,10 +32,9 @@ public class CouponController {
 
     @PostMapping("/riscatta/{couponCode}")
     public ResponseEntity<?> riscattaCoupon(HttpServletRequest request, @PathVariable String couponCode) {
+        String token = TokenStore.getInstance().getToken(request);
         try {
-            String authHeader = request.getHeader("Authorization");
-            if (authHeader != null && authHeader.startsWith("Bearer ")) {
-                String token = authHeader.substring(7);
+            if (token != null && !"invalid".equals(token)){
                 return couponService.riscattaCoupon(token, couponCode);
             } else {
                 return new ResponseEntity<>("Authorization header missing or invalid", HttpStatus.UNAUTHORIZED);

@@ -12,6 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/carrello-api")
+@CrossOrigin(origins = "*", allowedHeaders = "*")
 public class CarrelloController {
 
     @Autowired
