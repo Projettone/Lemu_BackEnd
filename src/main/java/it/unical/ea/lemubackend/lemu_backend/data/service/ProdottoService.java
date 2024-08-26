@@ -13,4 +13,6 @@ public interface ProdottoService {
     void save(ProdottoDto prodotto);
     List<ProdottoDto> searchProdotti(String keyword);
     List<ProdottoDto> getProdottiByCategoria(String categoria);
+    List<ProdottoDto> getByUserId(Long id);
+    void deleteById(Long id);
 }

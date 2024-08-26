@@ -17,4 +17,9 @@ public interface ProdottoDao extends JpaRepository<Prodotto, Long> {
     @Query("SELECT p FROM Prodotto p WHERE p.categoria = :categoria")
     List<Prodotto> findByCategoria(@Param("categoria") String categoria);
 
+    @Query("SELECT p FROM Prodotto p WHERE p.utente.id = :idutente")
+    List<Prodotto> findByUtente(@Param("idutente") Long idutente);
+
+
+
 }

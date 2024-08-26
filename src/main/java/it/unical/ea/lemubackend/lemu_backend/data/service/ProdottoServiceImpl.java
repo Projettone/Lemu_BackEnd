@@ -123,6 +123,8 @@ public class ProdottoServiceImpl implements  ProdottoService {
 
 
 
+
+
     public List<ProdottoDto> searchProdotti(String keyword) {
         // Recupera la lista di prodotti dalla ricerca
         List<Prodotto> prodotti = prodottoDao.searchByKeyword(keyword);
@@ -140,6 +142,20 @@ public class ProdottoServiceImpl implements  ProdottoService {
         return prodotti.stream()
                 .map(prodotto -> modelMapper.map(prodotto, ProdottoDto.class))
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<ProdottoDto> getByUserId(Long id) {
+        List<Prodotto> prodotti = prodottoDao.findByUtente(id);
+
+        return prodotti.stream()
+                .map(prodotto -> modelMapper.map(prodotto, ProdottoDto.class))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public void deleteById(Long id) {
+        prodottoDao.deleteById(id);
     }
 
 

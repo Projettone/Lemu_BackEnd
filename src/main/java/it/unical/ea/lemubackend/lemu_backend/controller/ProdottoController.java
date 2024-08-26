@@ -44,6 +44,11 @@ public class ProdottoController {
         return ResponseEntity.ok(prodottoService.getById(id));
     }
 
+    @GetMapping("/get-by-userId{id}")
+    public ResponseEntity<List<ProdottoDto>> getByUserId(@PathVariable("id") Long id) {
+        return ResponseEntity.ok(prodottoService.getByUserId(id));
+    }
+
 
     @GetMapping("/search")
     public ResponseEntity<List<ProdottoDto>> searchProdotti(@RequestParam String keyword) {
@@ -51,11 +56,15 @@ public class ProdottoController {
     }
 
 
-    //prendere tutti i prodotti di una determinata categoria
-
     @GetMapping("/get/by-category/{categoria}")
     public ResponseEntity<List<ProdottoDto>> getProdutCategory(@PathVariable("categoria") String categoria){
         return ResponseEntity.ok(prodottoService.getProdottiByCategoria(categoria));
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public ResponseEntity<Void> deleteById(@PathVariable("id") Long id) {
+        prodottoService.deleteById(id);
+        return ResponseEntity.noContent().build(); // Restituisce un 204 No Content
     }
 
 
