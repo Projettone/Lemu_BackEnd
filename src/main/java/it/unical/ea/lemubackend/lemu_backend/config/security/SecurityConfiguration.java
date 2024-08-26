@@ -40,11 +40,9 @@ public class SecurityConfiguration {
             "/recensione-api/getByIdProdotto/**",
             "/recensione-api/get-searched-reviews/**",
             // Prodotto
-            "/prodottocontroller-api/add",
             "/prodottocontroller-api/all",
             "/prodottocontroller-api/search",
             "/prodottocontroller-api/get/{id}",
-            "/prodottocontroller-api/add",
             "prodottocontroller-api/get/by-category/{categoria}",
             //Wishlist
             "/wishlist-api/add",
@@ -65,10 +63,12 @@ public class SecurityConfiguration {
             "/wishlistcondivisione-api/wishlist/{wishlistId}",
             "/wishlistcondivisione-api/condivise",
             "/wishlist-api/public/**",
-
             // Categorie
             "/categoria-api/get/{id}",
 
+
+           // "/ordinecontroller-api/getDettagliOrdini{idOrder}",
+            //"/ordinecontroller-api/ordine/{orderId}",
             "/swagger-ui/index.html",
             "/swagger-ui.html",
     };

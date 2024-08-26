@@ -51,7 +51,7 @@ public class OrdineController {
     }
 
 
-    /*
+
     @GetMapping("/getOrdiniByidUtente{idUser}")
     public ResponseEntity<Collection<OrdineDto>> getOrdinibyidUtente(HttpServletRequest request, @PathVariable ("idUser")Long id){
         try {
@@ -73,12 +73,7 @@ public class OrdineController {
         return null;
     }
 
-     */
 
-    @GetMapping("/getOrdiniByidUtente{idUser}")
-    public ResponseEntity<Collection<OrdineDto>> getOrdinibyidUtente(@PathVariable ("idUser")Long id){
-        return ResponseEntity.ok(ordineService.findOrderbyUser(id));
-    }
 
 
     /*
