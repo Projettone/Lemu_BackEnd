@@ -7,7 +7,7 @@ import java.util.List;
 public interface WishlistProdottiService {
     WishlistProdottiDto createWishlistProdotti(WishlistProdottiDto wishlistProdottiDto);
     WishlistProdottiDto updateWishlistProdotti(Long id, WishlistProdottiDto wishlistProdottiDto);
-    void deleteWishlistProdotti(Long id);
+    void deleteWishlistProdotti(Long wishlistId, Long prodottoId);
     WishlistProdottiDto getWishlistProdottiById(Long id);
     List<WishlistProdottiDto> getAllWishlistProdottiByWishlistId(Long wishlistId);
 

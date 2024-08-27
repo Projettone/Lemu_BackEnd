@@ -69,8 +69,10 @@ public class WishlistProdottiServiceImpl implements WishlistProdottiService {
     }
 
     @Override
-    public void deleteWishlistProdotti(Long id) {
-        wishlistProdottiDao.deleteById(id);
+    public void deleteWishlistProdotti(Long wishlistId, Long prodottoId) {
+        WishlistProdotti wishlistProdotti = wishlistProdottiDao.findByWishlist_IdAndProdotto_Id(wishlistId, prodottoId)
+                .orElseThrow(() -> new RuntimeException("Associazione Wishlist e Prodotto non trovata con Wishlist ID: " + wishlistId + " e Prodotto ID: " + prodottoId));
+        wishlistProdottiDao.delete(wishlistProdotti);
     }
 
     @Override

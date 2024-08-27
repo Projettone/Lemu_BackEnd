@@ -1,10 +1,13 @@
 package it.unical.ea.lemubackend.lemu_backend.controller;
 
+import it.unical.ea.lemubackend.lemu_backend.data.dao.WishlistProdottiDao;
+import it.unical.ea.lemubackend.lemu_backend.data.entities.WishlistProdotti;
 import it.unical.ea.lemubackend.lemu_backend.data.service.WishlistProdottiService;
 import it.unical.ea.lemubackend.lemu_backend.data.service.WishlistService;
 import it.unical.ea.lemubackend.lemu_backend.dto.WishlistDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.WishlistProdottiDto;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -68,11 +71,13 @@ public class WishlistController {
         return ResponseEntity.ok(updatedWishlistProdotti);
     }
 
-    @DeleteMapping("/prodotti/delete/{id}")
-    public ResponseEntity<Void> deleteWishlistProdotti(@PathVariable Long id) {
-        wishlistProdottiService.deleteWishlistProdotti(id);
+    @DeleteMapping("/prodotti/delete")
+    public ResponseEntity<Void> deleteWishlistProdotti(@RequestParam Long wishlistId, @RequestParam Long prodottoId) {
+        wishlistProdottiService.deleteWishlistProdotti(wishlistId, prodottoId);
         return ResponseEntity.noContent().build();
     }
+
+
 
     @GetMapping("prodotti/get/{id}")
     public ResponseEntity<WishlistProdottiDto> getWishlistProdottiById(@PathVariable Long id) {

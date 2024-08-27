@@ -44,6 +44,7 @@ public class SecurityConfiguration {
             "/prodottocontroller-api/search",
             "/prodottocontroller-api/get/{id}",
             "prodottocontroller-api/get/by-category/{categoria}",
+<<<<<<< Updated upstream
             //Wishlist
             "/wishlist-api/add",
             "/wishlist-api/update/{id}",
@@ -65,6 +66,8 @@ public class SecurityConfiguration {
             "/wishlist-api/public/**",
             // Categorie
             "/categoria-api/get/{id}",
+=======
+>>>>>>> Stashed changes
 
 
            // "/ordinecontroller-api/getDettagliOrdini{idOrder}",
