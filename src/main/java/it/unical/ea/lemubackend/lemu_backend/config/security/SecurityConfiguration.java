@@ -29,13 +29,13 @@ public class SecurityConfiguration {
             // -- Swagger UI v3
             "/v3/api-docs/**",
             "/swagger-ui/**",
-            "/utente-api/add",
             // Utente
             "/utente-api/register",
             "/utente-api/authenticate",
             "/utente-api/google_login",
             "/utente-api/facebook_login",
-            "utente-api/search",
+            "/utente-api/search",
+            "/utente-api/password-recovery/**",
             // Recensioni
             "/recensione-api/getByIdProdotto/**",
             "/recensione-api/get-searched-reviews/**",
@@ -44,8 +44,6 @@ public class SecurityConfiguration {
             "/prodottocontroller-api/search",
             "/prodottocontroller-api/get/{id}",
             "prodottocontroller-api/get/by-category/{categoria}",
-           // "/ordinecontroller-api/getDettagliOrdini{idOrder}",
-            //"/ordinecontroller-api/ordine/{orderId}",
             "/swagger-ui/index.html",
             "/swagger-ui.html",
     };

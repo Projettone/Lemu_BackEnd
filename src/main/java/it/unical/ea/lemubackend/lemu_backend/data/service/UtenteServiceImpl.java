@@ -99,7 +99,8 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
 
         utenteDao.save(utente);
 
-        sendregistrationConfirmationEmail(utenteRegistrazioneDto.getNome(), utenteRegistrazioneDto.getCredenzialiEmail());
+        String message = m.registrationConfirmation(utenteRegistrazioneDto.getNome());
+        sendEmail(utenteRegistrazioneDto.getCredenzialiEmail(), "Conferma registrazione Lemu", message);
 
         String token = tokenStore.createToken(Map.of("email", c.getEmail()));
         HttpHeaders headers = new HttpHeaders();
@@ -229,6 +230,9 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
             Utente utente = utenteOptional.get();
             utente.getCredenziali().setPassword(passwordEncoder.encode(newPassword));
             utenteDao.save(utente);
+
+            String message = m.passwordChangeSuccess(utente.getNome());
+            sendEmail(utente.getCredenziali().getEmail(), "Password Modificata con Successo", message);
         } else {
             throw new EntityNotFoundException("User not found");
         }
@@ -241,7 +245,6 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
         if (utenteOptional.isPresent()) {
             Utente utente = utenteOptional.get();
             utente.setIndirizzo(address);
-            System.out.println("ADDRESS: "+address);
             utenteDao.save(utente);
         } else {
             throw new EntityNotFoundException("User not found");
@@ -312,35 +315,29 @@ public class UtenteServiceImpl implements UtenteService, UserDetailsService {
 
     @Override
     public void sendPasswordRecoveryEmail(String email) {
-        String subject = "Recupero Password Lemu";
         Optional<Utente> utente = utenteDao.findByCredenzialiEmail(email);
         if (utente.isPresent()){
-            SecureRandom secureRandom = new SecureRandom();
-            byte[] randomBytes = new byte[12];
-            secureRandom.nextBytes(randomBytes);
-            String password = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
-            utente.get().getCredenziali().setPassword(passwordEncoder.encode(password));
-            utenteDao.save(utente.get());
+            String password = "";
+            if (!utente.get().getCredenziali().getPassword().isEmpty()){
+                SecureRandom secureRandom = new SecureRandom();
+                byte[] randomBytes = new byte[12];
+                secureRandom.nextBytes(randomBytes);
+                password = Base64.getUrlEncoder().withoutPadding().encodeToString(randomBytes);
+                utente.get().getCredenziali().setPassword(passwordEncoder.encode(password));
+                utenteDao.save(utente.get());
+            }
 
             Utente u = utente.get();
             String message = m.recovery_password(u.getNome(), password);
-            SimpleMailMessage mailMessage = new SimpleMailMessage();
-            mailMessage.setTo(email);
-            mailMessage.setSubject(subject);
-            mailMessage.setText(message);
-
-            mailSender.send(mailMessage);
+            sendEmail(email, "Recupero Password Lemu", message);
         }
     }
 
-    public void sendregistrationConfirmationEmail(String name, String email) {
-        String subject = "Conferma registrazione Lemu";
-        String message = m.registrationConfirmation(name);
+    private void sendEmail(String to, String subject, String text) {
         SimpleMailMessage mailMessage = new SimpleMailMessage();
-        mailMessage.setTo(email);
+        mailMessage.setTo(to);
         mailMessage.setSubject(subject);
-        mailMessage.setText(message);
-
+        mailMessage.setText(text);
         mailSender.send(mailMessage);
     }
 

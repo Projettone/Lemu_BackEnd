@@ -1,5 +1,6 @@
 package it.unical.ea.lemubackend.lemu_backend.controller;
 
+import com.nimbusds.jose.JOSEException;
 import it.unical.ea.lemubackend.lemu_backend.config.security.TokenStore;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Utente;
 import it.unical.ea.lemubackend.lemu_backend.data.service.RecensioneService;
@@ -11,8 +12,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
 import java.util.List;
 import java.util.Optional;
 
@@ -27,8 +30,13 @@ public class RecensioneController
 
 
     @PostMapping("/add")
-    public ResponseEntity<?> addRecensione(@RequestBody RecensioneDto recensioneDto) {
-        return recensioneService.save(recensioneDto);
+    public ResponseEntity<?> addRecensione(HttpServletRequest request, @RequestBody RecensioneDto recensioneDto) throws ParseException, JOSEException {
+        String token = TokenStore.getInstance().getToken(request);
+        String email = TokenStore.getInstance().getUserEmail(token);
+        if (token != null && !"invalid".equals(token) && email.equals(recensioneDto.getCredenzialiEmailAutore())) {
+            return recensioneService.save(recensioneDto);
+        }
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).build();
     }
 
 
