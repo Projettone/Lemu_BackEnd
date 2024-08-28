@@ -7,6 +7,7 @@ import it.unical.ea.lemubackend.lemu_backend.data.entities.Carrello;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.CarrelloProdotti;
 import it.unical.ea.lemubackend.lemu_backend.data.entities.Prodotto;
 import it.unical.ea.lemubackend.lemu_backend.dto.CarrelloProdottiDto;
+import jakarta.transaction.Transactional;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -78,6 +79,12 @@ public class CarrelloProdottiServiceImpl implements CarrelloProdottiService {
     @Override
     public void deleteCarrelloProdotti(Long id) {
         carrelloProdottiDao.deleteById(id);
+    }
+
+    @Transactional
+    @Override
+    public void deleteAllByCarrelloId(Long carrelloId) {
+        carrelloProdottiDao.deleteAllByCarrelloId(carrelloId);
     }
 
     @Override

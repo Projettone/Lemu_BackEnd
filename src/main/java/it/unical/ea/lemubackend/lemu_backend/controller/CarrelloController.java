@@ -78,4 +78,10 @@ public class CarrelloController {
         List<CarrelloProdottiDto> carrelloProdottiList = carrelloProdottiService.getAllCarrelloProdottiByCarrelloId(carrelloid);
         return ResponseEntity.ok(carrelloProdottiList);
     }
+
+    @DeleteMapping("/prodotti/deleteByCarrello/{carrelloId}")
+    public ResponseEntity<Void> deleteAllCarrelloProdottiByCarrelloId(@PathVariable Long carrelloId) {
+        carrelloProdottiService.deleteAllByCarrelloId(carrelloId);
+        return ResponseEntity.noContent().build();
+    }
 }

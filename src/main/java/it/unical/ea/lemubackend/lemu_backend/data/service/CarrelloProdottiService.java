@@ -8,6 +8,7 @@ public interface CarrelloProdottiService {
     CarrelloProdottiDto createCarrelloProdotti(CarrelloProdottiDto carrelloProdottiDto);
     CarrelloProdottiDto updateCarrelloProdotti(Long id, CarrelloProdottiDto carrelloProdottiDto);
     void deleteCarrelloProdotti(Long id);
+    void deleteAllByCarrelloId(Long carrelloId);
     CarrelloProdottiDto getCarrelloProdottiById(Long id);
     List<CarrelloProdottiDto> getAllCarrelloProdottiByCarrelloId(Long carrelloId);
 }
