@@ -12,11 +12,15 @@ import it.unical.ea.lemubackend.lemu_backend.dto.UtenteDto;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.TypeToken;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
+import java.lang.RuntimeException;
+
 
 @Service
 @RequiredArgsConstructor
@@ -67,13 +71,30 @@ public class OrdineServiceImpl implements OrdineService {
      */
 
     @Override
-    public void save(OrdineDto ordineDto) {
+    public Long save(OrdineDto ordineDto) {
         Ordine o = modelMapper.map(ordineDto, Ordine.class);
         UtenteDto utenteDto = utenteService.getById(ordineDto.getIdutente());
-        Utente utente =  modelMapper.map(utenteDto, Utente.class);
+        Utente utente = modelMapper.map(utenteDto, Utente.class);
         o.setUtente(utente);
-        ordineDao.save(o);
+        Ordine ordineSalvato = ordineDao.save(o);
+        return ordineSalvato.getId();
     }
+
+
+
+    @Override
+    public void updateOrdineProdotti(Long ordineId, List<OrdineProdottoDto> ordineProdottiDto) {
+        for (OrdineProdottoDto dto : ordineProdottiDto) {
+            // Convertire OrdineProdottoDto in entità OrdineProdotto
+            OrdineProdotto ordineProdotto = modelMapper.map(dto, OrdineProdotto.class);
+
+            // Salvare l'entità nel database
+            ordineProdottoDao.save(ordineProdotto);
+        }
+    }
+
+
+
 
 
 

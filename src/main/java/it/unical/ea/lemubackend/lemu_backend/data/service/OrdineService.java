@@ -4,10 +4,12 @@ import it.unical.ea.lemubackend.lemu_backend.dto.OrdineDto;
 import it.unical.ea.lemubackend.lemu_backend.dto.OrdineProdottoDto;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface OrdineService {
 
-    void save(OrdineDto ordine);
+    Long save(OrdineDto ordineDto);
+    void updateOrdineProdotti(Long ordineId, List<OrdineProdottoDto> ordineProdottiDto);
     OrdineDto getById(Long id);
     Collection<OrdineDto> findOrderbyUser(Long idUser);
     Collection<OrdineDto> findAllOrders();
