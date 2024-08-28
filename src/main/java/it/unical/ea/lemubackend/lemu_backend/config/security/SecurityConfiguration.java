@@ -44,32 +44,6 @@ public class SecurityConfiguration {
             "/prodottocontroller-api/search",
             "/prodottocontroller-api/get/{id}",
             "prodottocontroller-api/get/by-category/{categoria}",
-<<<<<<< Updated upstream
-            //Wishlist
-            "/wishlist-api/add",
-            "/wishlist-api/update/{id}",
-            "/wishlist-api/delete/{id}",
-            "/wishlist-api/getByUtente/{utenteId}",
-            "/wishlist-api/utente/{utenteId}",
-            "wishlist-api/prodotti/add",
-            "/wishlist-api/prodotti/update/{id}",
-            "/wishlist-api/prodotti/delete/{id}",
-            "/wishlist-api/prodotti/get/{id}",
-            "/wishlist-api/prodotti/get/{wishlistid}/all",
-            "/wishlistcondivisione-api/add",
-            "/wishlistcondivisione-api/update/{id}",
-            "/wishlistcondivisione-api/delete/{id}",
-            "/wishlistcondivisione-api/get/{id}",
-            "/wishlistcondivisione-api/all",
-            "/wishlistcondivisione-api/wishlist/{wishlistId}",
-            "/wishlistcondivisione-api/condivise",
-            "/wishlist-api/public/**",
-            // Categorie
-            "/categoria-api/get/{id}",
-=======
->>>>>>> Stashed changes
-
-
            // "/ordinecontroller-api/getDettagliOrdini{idOrder}",
             //"/ordinecontroller-api/ordine/{orderId}",
             "/swagger-ui/index.html",
